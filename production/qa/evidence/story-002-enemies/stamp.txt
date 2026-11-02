@@ -1,0 +1,11 @@
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Combat/DamageableQuery.cs 25b05881d09395647f763b482d9c6989aa8b538a
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Combat/Health.cs 9135c9b2459aa4821102dd7a7e3791a564bf57b5
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Player/AutoAttack.cs 4779481c603cb62d90af2b1bcb6eea3e4c3af9e0
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Config/CombatQueryConfig.cs 5f8dedfee9a3d93f99d2cfa4898e1b0b0a820374
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Config/EnemyConfig.cs ae258df0c4159fd0ae814219f6599a48981f7868
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/EnemyBase.cs 4c82172c51632ee826e78cdb561ba774a6508d76
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/Crawler.cs 28688cbe8d188a8fe74586100811b465ece3cce5
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/VoidCaster.cs 22037e6818ef2c3ae3121d098311842096bb8e6f
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/Projectile.cs 2fd697af4acf02924347dbc883f630a65c7fbd26
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/VolatileHusk.cs 5f4d76c453210e23620e3666ef494c929bab8e89
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Sandbox/PlayerSandbox.cs be49df79ed8b1a06a157afdba8be4738c0aaa874

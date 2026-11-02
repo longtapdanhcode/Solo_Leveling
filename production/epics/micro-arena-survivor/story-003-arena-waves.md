@@ -43,6 +43,7 @@
 ## Implementation Notes
 
 - `[PLACEHOLDER]` (chưa quy định): kích thước đấu trường, tốc độ/nhịp spawn, vị trí spawn, loại 4 quái phụ ở Wave 5, số quái tối đa cùng lúc.
+- **Đã chốt (2026-11-02):** Volatile Husk tự nổ vẫn tính là quái đã diệt của wave (nó phát `EnemyDied` như mọi cái chết khác).
 - Wave 5 và 10 gọi boss từ story 006; trước khi 006 xong dùng quái thay thế để thử luồng.
 - Quản lý trạng thái lượt (đang chơi, chọn thẻ, thắng, thua) bằng state machine nhỏ.
 

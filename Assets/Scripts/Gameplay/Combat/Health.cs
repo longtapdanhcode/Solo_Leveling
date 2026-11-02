@@ -17,6 +17,9 @@ namespace MicroArena.Gameplay.Combat
         [Tooltip("Layers searched for enemies pushed away by the revive shock.")]
         [SerializeField] private LayerMask _enemyLayers = ~0;
 
+        [Tooltip("Optional. A fresh instance with the default values is created when empty.")]
+        [SerializeField] private CombatQueryConfig _queryConfig;
+
         private HealthModel _model;
         private DamageableQuery _query;
         private readonly List<IDamageable> _scratch = new List<IDamageable>();
@@ -42,16 +45,24 @@ namespace MicroArena.Gameplay.Combat
         public bool ReviveAvailable => _model.ReviveAvailable;
 
         /// <summary>Injects dependencies when building the object at runtime. Call before the object is activated.</summary>
-        public void Configure(PlayerConfig config, LayerMask enemyLayers)
+        public void Configure(PlayerConfig config, LayerMask enemyLayers, CombatQueryConfig queryConfig = null)
         {
             _config = config;
             _enemyLayers = enemyLayers;
+            if (queryConfig != null)
+            {
+                _queryConfig = queryConfig;
+            }
         }
 
         private void Awake()
         {
             _model = new HealthModel(_config);
-            _query = new DamageableQuery();
+            if (_queryConfig == null)
+            {
+                _queryConfig = ScriptableObject.CreateInstance<CombatQueryConfig>();
+            }
+            _query = new DamageableQuery(_queryConfig.MaxQueryColliders);
             _model.OnHealthChanged += (current, max) => OnHealthChanged?.Invoke(current, max);
             _model.OnRevived += HandleRevived;
             _model.OnRunEnded += () => OnRunEnded?.Invoke();

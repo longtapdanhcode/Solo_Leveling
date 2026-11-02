@@ -8,9 +8,13 @@ namespace MicroArena.Gameplay.Combat
     /// <summary>Finds <see cref="IDamageable"/>s inside a sphere. Instance-owned buffer, no static state.</summary>
     public sealed class DamageableQuery
     {
-        private const int BufferSize = 64; // technical limit of colliders inspected per query, not a gameplay value
+        private readonly Collider[] _buffer;
 
-        private readonly Collider[] _buffer = new Collider[BufferSize];
+        /// <param name="maxColliders">Max colliders inspected per query, see <see cref="Config.CombatQueryConfig.MaxQueryColliders"/>.</param>
+        public DamageableQuery(int maxColliders)
+        {
+            _buffer = new Collider[maxColliders];
+        }
 
         /// <summary>Fills <paramref name="results"/> with distinct living damageables within <paramref name="radius"/> of <paramref name="center"/>.</summary>
         /// <param name="exclude">Transform of a damageable to skip (the caller itself); may be null.</param>

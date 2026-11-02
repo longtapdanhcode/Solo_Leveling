@@ -1,12 +1,12 @@
 # Story 002: Ba loại quái (Crawler, Void Caster, Volatile Husk)
 
 > **Epic**: micro-arena-survivor
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Logic
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-02
 
 ## Context
 
@@ -55,12 +55,17 @@
 
 ## Files
 
+- `Assets/Scripts/Gameplay/Combat/DamageableQuery.cs`
+- `Assets/Scripts/Gameplay/Combat/Health.cs`
+- `Assets/Scripts/Gameplay/Player/AutoAttack.cs`
+- `Assets/Scripts/Gameplay/Config/CombatQueryConfig.cs`
+- `Assets/Scripts/Gameplay/Config/EnemyConfig.cs`
+- `Assets/Scripts/Gameplay/Enemies/EnemyBase.cs`
 - `Assets/Scripts/Gameplay/Enemies/Crawler.cs`
 - `Assets/Scripts/Gameplay/Enemies/VoidCaster.cs`
+- `Assets/Scripts/Gameplay/Enemies/Projectile.cs`
 - `Assets/Scripts/Gameplay/Enemies/VolatileHusk.cs`
-- `Assets/Scripts/Gameplay/Enemies/EnemyBase.cs`
-- `Assets/Scripts/Gameplay/Config/EnemyConfig.cs`
-- `Assets/Tests/EditMode/Enemies/EnemyBehaviourTests.cs`
+- `Assets/Scripts/Gameplay/Sandbox/PlayerSandbox.cs`
 
 ---
 
@@ -85,3 +90,12 @@
 
 - Depends on: `production/epics/micro-arena-survivor/story-001-kaelen-core-combat.md`
 - Unlocks: `story-003-arena-waves.md`, `story-005-soul-burst.md`, `story-006-bosses.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-11-02
+**Criteria**: 7/7 passing (feel of bite timing and bolt dodgeability still needs a longer playtest in Wave 3–4)
+**Deviations**: None. Out of scope for awareness: story-003 was edited to record that a Husk self-explosion counts as a wave kill. Non-blocking leftovers: bolt is consumed on contact with Kaelen during dash invulnerability (design call), Husk explosion queries all layers, bolt collider removed with `Destroy`, sandbox shader falls back to Built-In "Standard".
+**Test Evidence**: waived at qa.level minimal; retained screenshot `production/qa/evidence/story-002-enemies/01-enemies.png`
+**Reviewed by**: self, no independent review

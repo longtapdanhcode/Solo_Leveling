@@ -23,6 +23,8 @@ namespace MicroArena.Gameplay.Player
         [SerializeField] private HitStop _hitStop;
         [Tooltip("Layers that contain enemies. Kaelen's own object is always skipped.")]
         [SerializeField] private LayerMask _enemyLayers = ~0;
+        [Tooltip("Optional. A fresh instance with the default values is created when empty.")]
+        [SerializeField] private CombatQueryConfig _queryConfig;
 
         private ComboStateMachine _combo;
         private DamageableQuery _query;
@@ -39,13 +41,17 @@ namespace MicroArena.Gameplay.Player
         public int CurrentStep => _combo.CurrentStep;
 
         /// <summary>Injects dependencies when building the object at runtime. Call before the object is activated.</summary>
-        public void Configure(PlayerConfig config, PlayerController player, Health health, HitStop hitStop, LayerMask enemyLayers)
+        public void Configure(PlayerConfig config, PlayerController player, Health health, HitStop hitStop, LayerMask enemyLayers, CombatQueryConfig queryConfig = null)
         {
             _config = config;
             _player = player;
             _health = health;
             _hitStop = hitStop;
             _enemyLayers = enemyLayers;
+            if (queryConfig != null)
+            {
+                _queryConfig = queryConfig;
+            }
         }
 
         /// <summary>Replaces the crit random source (0..1) so tests can be deterministic.</summary>
@@ -64,7 +70,11 @@ namespace MicroArena.Gameplay.Player
         private void Awake()
         {
             _combo = new ComboStateMachine(_config);
-            _query = new DamageableQuery();
+            if (_queryConfig == null)
+            {
+                _queryConfig = ScriptableObject.CreateInstance<CombatQueryConfig>();
+            }
+            _query = new DamageableQuery(_queryConfig.MaxQueryColliders);
             _combo.OnSwingHit += ApplySwing;
         }
 
