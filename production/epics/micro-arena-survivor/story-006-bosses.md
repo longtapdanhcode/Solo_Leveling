@@ -54,10 +54,10 @@
 
 ## Files
 
-- `Assets/Scripts/Bosses/GargoyleTyrant.cs`
-- `Assets/Scripts/Bosses/VoidWarden.cs`
-- `Assets/Scripts/Bosses/Telegraph.cs`
-- `Assets/Scripts/Config/BossConfig.cs`
+- `Assets/Scripts/Gameplay/Bosses/GargoyleTyrant.cs`
+- `Assets/Scripts/Gameplay/Bosses/VoidWarden.cs`
+- `Assets/Scripts/Gameplay/Bosses/Telegraph.cs`
+- `Assets/Scripts/Gameplay/Config/BossConfig.cs`
 - `Assets/Tests/PlayMode/Bosses/BossTests.cs`
 
 ---

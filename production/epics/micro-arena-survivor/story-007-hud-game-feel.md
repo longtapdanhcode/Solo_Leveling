@@ -57,8 +57,8 @@
 
 - `Assets/Scripts/UI/HudController.cs`
 - `Assets/Scripts/UI/EndScreens.cs`
-- `Assets/Scripts/Feel/ScreenShake.cs`
-- `Assets/Scripts/Config/FeelConfig.cs`
+- `Assets/Scripts/Gameplay/Feel/ScreenShake.cs`
+- `Assets/Scripts/Gameplay/Config/FeelConfig.cs`
 
 ---
 

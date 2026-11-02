@@ -58,10 +58,10 @@
 
 ## Files
 
-- `Assets/Scripts/Waves/WaveDirector.cs`
-- `Assets/Scripts/Waves/RunState.cs`
-- `Assets/Scripts/Arena/RotatingTrap.cs`
-- `Assets/Scripts/Config/WaveConfig.cs`
+- `Assets/Scripts/Gameplay/Waves/WaveDirector.cs`
+- `Assets/Scripts/Gameplay/Waves/RunState.cs`
+- `Assets/Scripts/Gameplay/Arena/RotatingTrap.cs`
+- `Assets/Scripts/Gameplay/Config/WaveConfig.cs`
 - `Assets/Scenes/Arena.unity`
 - `Assets/Tests/PlayMode/Waves/WaveDirectorTests.cs`
 

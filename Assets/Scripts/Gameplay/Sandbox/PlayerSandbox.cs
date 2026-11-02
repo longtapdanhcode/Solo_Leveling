@@ -1,0 +1,193 @@
+// VERIFICATION SCAFFOLDING for story-001 (production/epics/micro-arena-survivor/story-001-kaelen-core-combat.md,
+// design/game-brief.md MVP 1). Not a game feature; delete or replace once the arena scene (story 003) exists.
+//
+// Put this on an empty GameObject in a scene. At runtime it builds a ground plane, Kaelen (capsule with all
+// story-001 components), a top-down follow camera and a few TargetDummy targets, plus a debug overlay.
+// Test keys: H = Kaelen takes damage (to see the revive and run end), R = reset the run.
+
+using MicroArena.Gameplay.Combat;
+using MicroArena.Gameplay.Config;
+using MicroArena.Gameplay.Player;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace MicroArena.Gameplay.Sandbox
+{
+    /// <summary>Builds a minimal playable test area for Kaelen at runtime.</summary>
+    public sealed class PlayerSandbox : MonoBehaviour
+    {
+        [Tooltip("Optional. A fresh instance with the default values is created when empty.")]
+        [SerializeField] private PlayerConfig _config;
+        [Tooltip("Assets/InputSystem_Actions.inputactions. When empty: project-wide InputSystem.actions, then (editor only) the asset path.")]
+        [SerializeField] private InputActionAsset _inputActions;
+        [SerializeField] private Vector3 _cameraOffset = new Vector3(0f, 14f, -5f);
+        [SerializeField] private float _groundSize = 40f;
+        [SerializeField] private Vector3[] _dummyPositions =
+        {
+            new Vector3(2f, 1f, 0f), new Vector3(-2f, 1f, 2f), new Vector3(0f, 1f, 6f), new Vector3(5f, 1f, 5f),
+        };
+        [Tooltip("Damage dealt to Kaelen by the H test key.")]
+        [SerializeField] private float _testDamage = 30f;
+
+        private Transform _kaelen;
+        private Health _health;
+        private Dash _dash;
+        private AutoAttack _attack;
+        private PlayerController _controller;
+        private Camera _camera;
+        private string _lastEvent = "-";
+
+        private void Start()
+        {
+            if (_inputActions == null)
+            {
+                _inputActions = InputSystem.actions; // project-wide actions, also available in player builds
+            }
+#if UNITY_EDITOR
+            if (_inputActions == null)
+            {
+                _inputActions = UnityEditor.AssetDatabase.LoadAssetAtPath<InputActionAsset>("Assets/InputSystem_Actions.inputactions");
+            }
+#endif
+            if (_inputActions == null)
+            {
+                Debug.LogError("PlayerSandbox: assign the InputSystem_Actions asset.", this);
+                enabled = false;
+                return;
+            }
+            if (_config == null)
+            {
+                _config = ScriptableObject.CreateInstance<PlayerConfig>();
+            }
+
+            BuildGround();
+            BuildKaelen();
+            BuildCamera();
+            foreach (Vector3 position in _dummyPositions)
+            {
+                BuildDummy(position);
+            }
+        }
+
+        private void BuildGround()
+        {
+            GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            ground.name = "Ground";
+            ground.transform.localScale = new Vector3(_groundSize / 10f, 1f, _groundSize / 10f); // plane is 10 m per scale unit
+            ground.GetComponent<Renderer>().sharedMaterial = MakeMaterial(new Color(0.25f, 0.27f, 0.3f));
+        }
+
+        private void BuildKaelen()
+        {
+            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            go.name = "Kaelen";
+            go.transform.position = new Vector3(0f, 1f, 0f);
+            go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(new Color(0.2f, 0.5f, 1f));
+            go.SetActive(false); // configure before Awake runs
+
+            GameObject nose = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            nose.name = "FacingMarker";
+            nose.transform.SetParent(go.transform, false);
+            nose.transform.localPosition = new Vector3(0f, 0.3f, 0.6f);
+            nose.transform.localScale = new Vector3(0.3f, 0.3f, 0.5f);
+            Destroy(nose.GetComponent<Collider>());
+            nose.GetComponent<Renderer>().sharedMaterial = MakeMaterial(Color.white);
+
+            _health = go.AddComponent<Health>();
+            _dash = go.AddComponent<Dash>();
+            _attack = go.AddComponent<AutoAttack>();
+            _controller = go.AddComponent<PlayerController>();
+            var hitStop = go.AddComponent<HitStop>();
+
+            LayerMask everything = ~0;
+            _health.Configure(_config, everything);
+            _attack.Configure(_config, _controller, _health, hitStop, everything);
+            _dash.Configure(_config, _inputActions, _controller, _health);
+            _controller.Configure(_config, _inputActions, _health, _dash, _attack);
+
+            _health.OnRevived += () => _lastEvent = "Revived";
+            _health.OnRunEnded += () => _lastEvent = "Run ended";
+            _attack.OnHitLanded += (target, info) => _lastEvent = $"Hit {info.Amount}{(info.IsCritical ? " CRIT" : "")}";
+
+            go.SetActive(true);
+            _kaelen = go.transform;
+        }
+
+        private void BuildCamera()
+        {
+            _camera = Camera.main;
+            if (_camera == null)
+            {
+                var cameraObject = new GameObject("Main Camera") { tag = "MainCamera" };
+                _camera = cameraObject.AddComponent<Camera>();
+            }
+            if (FindAnyObjectByType<Light>() == null)
+            {
+                var lightObject = new GameObject("Directional Light");
+                lightObject.AddComponent<Light>().type = LightType.Directional;
+                lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+            }
+        }
+
+        private void BuildDummy(Vector3 position)
+        {
+            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            go.name = "Dummy";
+            go.transform.position = position;
+            go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(new Color(0.8f, 0.7f, 0.2f));
+            go.AddComponent<TargetDummy>();
+        }
+
+        private static Material MakeMaterial(Color color)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null)
+            {
+                shader = Shader.Find("Standard");
+            }
+            return new Material(shader) { color = color };
+        }
+
+        private void LateUpdate()
+        {
+            if (_kaelen == null)
+            {
+                return;
+            }
+            _camera.transform.position = _kaelen.position + _cameraOffset;
+            _camera.transform.LookAt(_kaelen.position);
+        }
+
+        private void Update()
+        {
+            if (_kaelen == null || Keyboard.current == null)
+            {
+                return;
+            }
+            if (Keyboard.current.hKey.wasPressedThisFrame)
+            {
+                _health.TakeDamage(new DamageInfo { Amount = _testDamage });
+            }
+            if (Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                _controller.ResetForNewRun();
+                _lastEvent = "Run reset";
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (_kaelen == null)
+            {
+                return;
+            }
+            GUILayout.BeginArea(new Rect(10f, 10f, 420f, 200f));
+            GUILayout.Label($"HP {_health.Current:0}/{_health.Max:0}   invulnerable: {_health.IsInvulnerable}   revive left: {_health.ReviveAvailable}   alive: {_health.IsAlive}");
+            GUILayout.Label($"Dash charges {_dash.Charges}/{_dash.MaxCharges}   next: {_dash.RechargeProgress:P0}   dashing: {_dash.IsDashing}");
+            GUILayout.Label($"Combo step {_attack.CurrentStep + 1}   state: {_attack.State}");
+            GUILayout.Label($"Last event: {_lastEvent}");
+            GUILayout.Label("WASD move, Space dash, H hurt self, R reset run");
+            GUILayout.EndArea();
+        }
+    }
+}

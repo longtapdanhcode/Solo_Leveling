@@ -56,10 +56,10 @@
 
 ## Files
 
-- `Assets/Scripts/Cards/CardPool.cs`
-- `Assets/Scripts/Cards/CardEffects.cs`
-- `Assets/Scripts/Cards/CardPickScreen.cs`
-- `Assets/Scripts/Config/CardConfig.cs`
+- `Assets/Scripts/Gameplay/Cards/CardPool.cs`
+- `Assets/Scripts/Gameplay/Cards/CardEffects.cs`
+- `Assets/Scripts/Gameplay/Config/CardConfig.cs`
+- `Assets/Scripts/UI/CardPickScreen.cs`
 - `Assets/Tests/EditMode/Cards/CardTests.cs`
 
 ---

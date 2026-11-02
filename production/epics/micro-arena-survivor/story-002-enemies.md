@@ -55,11 +55,11 @@
 
 ## Files
 
-- `Assets/Scripts/Enemies/Crawler.cs`
-- `Assets/Scripts/Enemies/VoidCaster.cs`
-- `Assets/Scripts/Enemies/VolatileHusk.cs`
-- `Assets/Scripts/Enemies/EnemyBase.cs`
-- `Assets/Scripts/Config/EnemyConfig.cs`
+- `Assets/Scripts/Gameplay/Enemies/Crawler.cs`
+- `Assets/Scripts/Gameplay/Enemies/VoidCaster.cs`
+- `Assets/Scripts/Gameplay/Enemies/VolatileHusk.cs`
+- `Assets/Scripts/Gameplay/Enemies/EnemyBase.cs`
+- `Assets/Scripts/Gameplay/Config/EnemyConfig.cs`
 - `Assets/Tests/EditMode/Enemies/EnemyBehaviourTests.cs`
 
 ---

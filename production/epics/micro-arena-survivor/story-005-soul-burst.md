@@ -52,8 +52,8 @@
 
 ## Files
 
-- `Assets/Scripts/Player/SoulBurst.cs`
-- `Assets/Scripts/Config/SoulBurstConfig.cs`
+- `Assets/Scripts/Gameplay/Player/SoulBurst.cs`
+- `Assets/Scripts/Gameplay/Config/SoulBurstConfig.cs`
 - `Assets/Tests/EditMode/SoulBurst/SoulBurstTests.cs`
 
 ---

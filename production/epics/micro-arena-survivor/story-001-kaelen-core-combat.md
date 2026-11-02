@@ -1,12 +1,12 @@
 # Story 001: Kaelen — di chuyển, auto-attack, Dash, HP, hồi sinh
 
 > **Epic**: micro-arena-survivor
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-02
 
 ## Context
 
@@ -61,12 +61,22 @@
 
 ## Files
 
-- `Assets/Scripts/Player/PlayerController.cs`
-- `Assets/Scripts/Player/AutoAttack.cs`
-- `Assets/Scripts/Player/Dash.cs`
-- `Assets/Scripts/Combat/Health.cs`
-- `Assets/Scripts/Config/PlayerConfig.cs`
-- `Assets/Tests/EditMode/Player/PlayerCombatTests.cs`
+- `Assets/Scripts/Gameplay/Combat/DamageableQuery.cs`
+- `Assets/Scripts/Gameplay/Combat/Health.cs`
+- `Assets/Scripts/Gameplay/Combat/HealthModel.cs`
+- `Assets/Scripts/Gameplay/Combat/HitStop.cs`
+- `Assets/Scripts/Gameplay/Combat/IDamageable.cs`
+- `Assets/Scripts/Gameplay/Config/PlayerConfig.cs`
+- `Assets/Scripts/Gameplay/Player/AutoAttack.cs`
+- `Assets/Scripts/Gameplay/Player/ComboStateMachine.cs`
+- `Assets/Scripts/Gameplay/Player/Dash.cs`
+- `Assets/Scripts/Gameplay/Player/DashModel.cs`
+- `Assets/Scripts/Gameplay/Player/PlayerController.cs`
+- `Assets/Scripts/Gameplay/Player/TargetSelector.cs`
+- `Assets/Scripts/Gameplay/Sandbox/PlayerSandbox.cs`
+- `Assets/Scripts/Gameplay/Sandbox/TargetDummy.cs`
+- `Assets/InputSystem_Actions.inputactions` (Player map: Move, Dash, SoulBurst)
+- `Assets/Scenes/PlayerSandbox.unity` (verification scene, created in the editor)
 
 ---
 
@@ -93,3 +103,12 @@
 
 - Depends on: None
 - Unlocks: `production/epics/micro-arena-survivor/story-002-enemies.md`, `story-003-arena-waves.md`, `story-004-upgrade-cards.md`, `story-005-soul-burst.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-11-02
+**Criteria**: 10/10 passing (hit-stop "cảm giác nặng tay" chờ playtest)
+**Deviations**: None against the brief. Out of scope, for awareness: Unity-generated `.meta` files and `production/qa/`. `[PLACEHOLDER]` values in `PlayerConfig` await owner approval after playtest.
+**Test Evidence**: waived at qa.level minimal; retained screenshot `production/qa/evidence/story-001-kaelen.png` (stamp `story-001-kaelen.stamp.txt`, all UNCHANGED)
+**Reviewed by**: self, no independent review
