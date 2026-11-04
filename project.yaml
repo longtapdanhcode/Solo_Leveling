@@ -57,7 +57,10 @@ naming:
   scenes: PascalCase
 
 commands:
-  # TODO: the macOS app's inner executable follows PlayerSettings.productName (now "CK-Unity-tmp"); confirm `run` after the first build
+  # `run` confirmed by the first build (2026-11-04): productName is "MicroArenaSurvivor", so the bundle's
+  # CFBundleExecutable is Contents/MacOS/MicroArenaSurvivor and `open` resolves it. `build` makes a release
+  # player; the -arenaStartWave / -arenaInvulnerable debug arguments work only in a development build
+  # (Debug.isDebugBuild). Make one from File > Build Profiles with "Development Build" ticked.
   build: '"/Applications/Unity/Hub/Editor/6000.6.3f1/Unity.app/Contents/MacOS/Unity" -batchmode -quit -projectPath . -buildTarget osxuniversal -buildOSXUniversalPlayer Builds/macOS/MicroArenaSurvivor.app'
   test: '"/Applications/Unity/Hub/Editor/6000.6.3f1/Unity.app/Contents/MacOS/Unity" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml'
   run: "open -W -n Builds/macOS/MicroArenaSurvivor.app --args -screen-width 1280 -screen-height 720 -screen-fullscreen 0"

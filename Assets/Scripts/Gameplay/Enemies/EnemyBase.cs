@@ -134,6 +134,16 @@ namespace MicroArena.Gameplay.Enemies
             return true;
         }
 
+        /// <summary>
+        /// Removes the enemy without a death: <see cref="OnDied"/> is NOT raised, so it counts as no kill.
+        /// Used by the wave director to clear leftovers when a wave ends by timer or boss kill, and on restart.
+        /// </summary>
+        public void DespawnSilently()
+        {
+            IsAlive = false;
+            Destroy(gameObject);
+        }
+
         /// <summary>Per-frame behaviour. Not called while stunned, dead, or while Kaelen is down.</summary>
         protected abstract void Act(float deltaTime);
 

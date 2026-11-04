@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b73e0ab2237e43069932d354ebacd78, type: 3}
+  m_Name: WaveConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.WaveConfig
+  _waves:
+  - _goal: 0
+    _killTarget: 15
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 0
+    _killTarget: 15
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 0
+    _killTarget: 25
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 2
+    - _prefab: {fileID: 9175230208322374583, guid: c2ccae39c16444afd9fe1e76b3613fe4, type: 3}
+      _config: {fileID: 11400000, guid: 6772e119fb9094aa3877194565e19d99, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 0
+    _killTarget: 25
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 2
+    - _prefab: {fileID: 9175230208322374583, guid: c2ccae39c16444afd9fe1e76b3613fe4, type: 3}
+      _config: {fileID: 11400000, guid: 6772e119fb9094aa3877194565e19d99, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 2
+    _killTarget: 1
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 5862522109862123742, guid: d2358b58106f44976aa3c3c09732afbf, type: 3}
+    _bossConfig: {fileID: 11400000, guid: b16f7aa43485e4b0ab7e6648b3608d57, type: 2}
+    _escortCount: 4
+  - _goal: 1
+    _killTarget: 40
+    _surviveSeconds: 60
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 2
+    - _prefab: {fileID: 4482918420386476658, guid: a190a403cd2c747e18bfc7150bb06ff9, type: 3}
+      _config: {fileID: 11400000, guid: 84abf3968ab3c4d84934c940ee9fae72, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 1
+    _killTarget: 40
+    _surviveSeconds: 60
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 2
+    - _prefab: {fileID: 4482918420386476658, guid: a190a403cd2c747e18bfc7150bb06ff9, type: 3}
+      _config: {fileID: 11400000, guid: 84abf3968ab3c4d84934c940ee9fae72, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 0
+    _killTarget: 50
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 2
+    - _prefab: {fileID: 9175230208322374583, guid: c2ccae39c16444afd9fe1e76b3613fe4, type: 3}
+      _config: {fileID: 11400000, guid: 6772e119fb9094aa3877194565e19d99, type: 2}
+      _weight: 1
+    - _prefab: {fileID: 4482918420386476658, guid: a190a403cd2c747e18bfc7150bb06ff9, type: 3}
+      _config: {fileID: 11400000, guid: 84abf3968ab3c4d84934c940ee9fae72, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 0
+    _killTarget: 50
+    _surviveSeconds: 0
+    _spawnPool:
+    - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
+      _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
+      _weight: 2
+    - _prefab: {fileID: 9175230208322374583, guid: c2ccae39c16444afd9fe1e76b3613fe4, type: 3}
+      _config: {fileID: 11400000, guid: 6772e119fb9094aa3877194565e19d99, type: 2}
+      _weight: 1
+    - _prefab: {fileID: 4482918420386476658, guid: a190a403cd2c747e18bfc7150bb06ff9, type: 3}
+      _config: {fileID: 11400000, guid: 84abf3968ab3c4d84934c940ee9fae72, type: 2}
+      _weight: 1
+    _bossPrefab: {fileID: 0}
+    _bossConfig: {fileID: 0}
+    _escortCount: 0
+  - _goal: 2
+    _killTarget: 1
+    _surviveSeconds: 0
+    _spawnPool: []
+    _bossPrefab: {fileID: 5331236683373385064, guid: cd53224d910ea49578be6a38d21a22f9, type: 3}
+    _bossConfig: {fileID: 11400000, guid: 7efde2aa227cf42c7b9093881f3e17b3, type: 2}
+    _escortCount: 0
+  _spawnInterval: 0.8
+  _maxAlive: 12
+  _spawnInset: 2
+  _minSpawnDistanceFromPlayer: 8
+  _arenaSize: 40
+  _wallHeight: 2
+  _wallThickness: 1
+  _boundsPadding: 0.5
+  _defeatRestartDelay: 2
+  _trapStartWave: 8
+  _trapSecondsPerRevolution: 6
+  _trapDamage: 15
+  _trapContactCooldown: 0.75
+  _trapLength: 12
+  _trapWidth: 0.6
+  _trapHeight: 0.5
+  _trapHitPadding: 0.5
