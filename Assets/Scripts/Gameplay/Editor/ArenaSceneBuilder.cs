@@ -152,6 +152,9 @@ namespace MicroArena.Gameplay.Editor
 
             Material decoyMat = GetOrCreateMaterial("Decoy", new Color(0.55f, 0.8f, 1f), lit);
             Material meteorMat = GetOrCreateMaterial("MeteorMarker", new Color(1f, 0.35f, 0.05f), lit);
+            Material ringMat = GetOrCreateMaterial("SoulBurstRing", new Color(0.7f, 0.25f, 1f, 0.55f), lit);
+            MakeTransparent(ringMat);
+            SoulBurstConfig soulBurstConfig = GetOrCreateAsset($"{DataFolder}/SoulBurstConfig.asset", () => ScriptableObject.CreateInstance<SoulBurstConfig>());
             CardEffectConfig cardEffects = GetOrCreateAsset($"{DataFolder}/CardEffectConfig.asset", () =>
             {
                 var effects = ScriptableObject.CreateInstance<CardEffectConfig>();
@@ -162,7 +165,7 @@ namespace MicroArena.Gameplay.Editor
                 return effects;
             });
 
-            BuildSceneContents(waveConfig, floorMat, wallMat, kaelenPrefab, trapPrefab, queryConfig, cardPool, cardEffects);
+            BuildSceneContents(waveConfig, floorMat, wallMat, kaelenPrefab, trapPrefab, queryConfig, cardPool, cardEffects, soulBurstConfig, ringMat, actions);
 
             if (!EditorSceneManager.SaveScene(scene, ScenePath))
             {
@@ -464,7 +467,8 @@ namespace MicroArena.Gameplay.Editor
         }
 
         private static void BuildSceneContents(WaveConfig config, Material floorMat, Material wallMat, PlayerController kaelenPrefab,
-            RotatingTrap trapPrefab, CombatQueryConfig queryConfig, CardPoolConfig cardPool, CardEffectConfig cardEffects)
+            RotatingTrap trapPrefab, CombatQueryConfig queryConfig, CardPoolConfig cardPool, CardEffectConfig cardEffects,
+            SoulBurstConfig soulBurstConfig, Material ringMat, InputActionAsset actions)
         {
             var lightObject = new GameObject("Directional Light");
             var light = lightObject.AddComponent<Light>();
@@ -503,7 +507,11 @@ namespace MicroArena.Gameplay.Editor
             var director = directorObject.AddComponent<WaveDirector>();
             director.Configure(config, runState, health, controller, trap, queryConfig);
             director.SetAutoContinueCardPick(false); // story 004: CardController continues after the pick
-            directorObject.AddComponent<WaveDebugOverlay>().Configure(director, health);
+
+            // Story 005: Soul Burst lives on Kaelen's scene instance (it needs the scene's director and run state).
+            var soulBurst = kaelenObject.AddComponent<SoulBurst>();
+            soulBurst.Configure(soulBurstConfig, actions, health, controller, runState, director, ~0, queryConfig, ringMat);
+            directorObject.AddComponent<WaveDebugOverlay>().Configure(director, health, soulBurst);
 
             var cardObject = new GameObject("CardController");
             var screen = cardObject.AddComponent<CardPickScreen>();
@@ -519,6 +527,25 @@ namespace MicroArena.Gameplay.Editor
             follow.Configure(kaelenObject.transform);
             cameraObject.transform.position = kaelenObject.transform.position + new Vector3(0f, 14f, -5f); // matches FollowCamera default offset
             cameraObject.transform.LookAt(kaelenObject.transform.position);
+        }
+
+        // URP Lit alpha blending, written once when the material is created (the other materials are opaque).
+        private static void MakeTransparent(Material material)
+        {
+            if (material.GetFloat("_Surface") == 1f)
+            {
+                return;
+            }
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_Blend", 0f);
+            material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_ZWrite", 0f);
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.SetShaderPassEnabled("ShadowCaster", false);
+            material.renderQueue = (int)RenderQueue.Transparent;
+            EditorUtility.SetDirty(material);
         }
 
         private static void CreateBox(string name, Vector3 position, Vector3 scale, Material material)

@@ -1,12 +1,12 @@
 # Story 005: Soul Burst (thanh nộ + phím Q)
 
 > **Epic**: micro-arena-survivor
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Logic
 > **Estimate**: S
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-05
 
 ## Context
 
@@ -52,11 +52,16 @@
 
 ## Files
 
-- `Assets/Scripts/Gameplay/Player/SoulBurst.cs`
-- `Assets/Scripts/Gameplay/Config/SoulBurstConfig.cs`
-- `Assets/Tests/EditMode/SoulBurst/SoulBurstTests.cs`
-
----
+- `Assets/Scripts/Gameplay/Config/SoulBurstConfig.cs` — created (rage/kill 5, max 100, 120 DMG, radius 6 m, knockback 4 m, ring look)
+- `Assets/Scripts/Gameplay/Player/SoulBurstModel.cs` — created (plain C# rage model)
+- `Assets/Scripts/Gameplay/Player/SoulBurst.cs` — created (Q, gating, shockwave via IDamageable, boss no-knockback, ring, debug `-arenaAutoSoulBurst`)
+- `Assets/Scripts/Gameplay/Waves/WaveDirector.cs` — modified (`IsBoss`)
+- `Assets/Scripts/Gameplay/Waves/WaveDebugOverlay.cs` — modified (rage line, verification scaffolding)
+- `Assets/Scripts/Gameplay/Editor/ArenaSceneBuilder.cs` — modified (SoulBurstConfig asset, ring material, SoulBurst on Kaelen)
+- `Assets/Data/SoulBurstConfig.asset`, `Assets/Materials/SoulBurstRing.mat` — created
+- `Assets/Scenes/Arena.unity` — regenerated
+- `tools/soul-burst-check/SoulBurstCheck.cs`, `README.md` — created (rule check kept outside Assets/; copy in to run)
+- No EditMode test (waived at qa.level minimal)
 
 ## QA Test Cases
 
@@ -77,3 +82,16 @@
 
 - Depends on: `story-001-kaelen-core-combat.md`, `story-002-enemies.md`
 - Unlocks: `story-007-hud-game-feel.md`
+
+---
+
+## Completion Notes
+
+**Completed**: 2026-11-05
+**Criteria**: 6/6 covered by automated checks; in-play half NOT VERIFIED (real Q key, boss at wave 5/10, Husk self-explosion in play, pause/Defeat/Victory, rage across waves) — listed in `production/qa/final-playtest-checklist.md` rows 5.1–5.12 for the owner's final playtest. Verdict was NOT ASSESSED; owner chose to close anyway.
+**Deviations**:
+- ADVISORY: Test Evidence section above still names the EditMode folder; tests are waived at qa.level minimal (rule check in `tools/soul-burst-check/`, 43/43 PASS).
+- ADVISORY: `MakeTransparent` in `ArenaSceneBuilder` re-forces transparent on rebuild; ring material does not set alpha-channel blend; ring pauses during hit-stop.
+- Decisions: radius 6 m, knockback 4 m, 120 flat DMG (no modifiers/crit), boss takes damage but no knockback, Q inactive while paused / not Playing / Kaelen dead, Kaelen unharmed; debug-only `-arenaAutoSoulBurst <s>` to capture the shockwave; rage line in `WaveDebugOverlay` (real HUD is story 007).
+**Test Evidence**: waived at qa.level minimal; screenshots in `production/qa/evidence/story-005-soul-burst/` and `production/qa/evidence/story-005-soulburst.png`
+**Reviewed by**: self, no independent review

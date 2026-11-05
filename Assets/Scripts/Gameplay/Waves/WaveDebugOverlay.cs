@@ -2,6 +2,7 @@
 // wave flow on screen for the evidence screenshot. Not the HUD; replace or delete when story 007 adds the real HUD.
 
 using MicroArena.Gameplay.Combat;
+using MicroArena.Gameplay.Player;
 using UnityEngine;
 
 namespace MicroArena.Gameplay.Waves
@@ -13,13 +14,17 @@ namespace MicroArena.Gameplay.Waves
         [Tooltip("Kaelen.")]
         [SerializeField] private Health _player;
 
+        [Tooltip("Story 005 scaffolding: the rage line.")]
+        [SerializeField] private SoulBurst _soulBurst;
+
         private string _lastEvent = "-";
 
         /// <summary>Injects dependencies when building the scene.</summary>
-        public void Configure(WaveDirector director, Health player)
+        public void Configure(WaveDirector director, Health player, SoulBurst soulBurst)
         {
             _director = director;
             _player = player;
+            _soulBurst = soulBurst;
         }
 
         private void OnEnable()
@@ -45,11 +50,16 @@ namespace MicroArena.Gameplay.Waves
 
         private void OnGUI()
         {
-            GUILayout.BeginArea(new Rect(10f, 10f, 520f, 200f));
+            GUILayout.BeginArea(new Rect(10f, 10f, 520f, 224f));
             GUILayout.Label($"Wave {_director.CurrentWave}/{_director.WaveCount}   phase: {_director.Run.Phase}   goal: {_director.CurrentGoal}");
             string timer = _director.SurviveTimeRemaining >= 0f ? $"   survive: {_director.SurviveTimeRemaining:0.0}s" : string.Empty;
             GUILayout.Label($"Remaining {_director.Remaining}/{_director.RemainingTarget}{timer}   enemies alive: {_director.AliveEnemyCount}");
             GUILayout.Label($"HP {_player.Current:0}/{_player.Max:0}   revive left: {_player.ReviveAvailable}   invulnerable: {_player.IsInvulnerable}{(_director.IsDebugInvulnerable ? " (debug)" : string.Empty)}");
+            if (_soulBurst != null)
+            {
+                string burst = _soulBurst.LastBurstHits >= 0 ? $"hit {_soulBurst.LastBurstHits}" : "-";
+                GUILayout.Label($"Rage {_soulBurst.Rage:0}/{_soulBurst.MaxRage:0}   last burst: {burst}");
+            }
             GUILayout.Label($"Last event: {_lastEvent}");
             GUILayout.EndArea();
         }

@@ -1,0 +1,10 @@
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Player/SoulBurst.cs b0ddc0634b4a87c64a4f29887da9acef7fc3ed4e
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Player/SoulBurstModel.cs 37562b1bd21e811ce9440011223c48fd853d0213
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Config/SoulBurstConfig.cs bee82973fa1a06c01873eaf1e0514f9ee51c93d6
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Waves/WaveDirector.cs 3185d14ef7ceb6431eb02612869019f825d79f87
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Waves/WaveDebugOverlay.cs 7166fd849dc20dccfb596398a11ab7287477009d
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Editor/ArenaSceneBuilder.cs ecee0894673226eebb2e9a1cf85a04ec4061d3ec
+Reviewed-Content-Hash: Assets/Scenes/Arena.unity 2e1a2c7c85792e0acb90612c75c0c4e48b421c39
+Reviewed-Content-Hash: Assets/Data/SoulBurstConfig.asset 36337ca711c6c81a028875a7dde6f4c77f477239
+Reviewed-Content-Hash: Assets/Materials/SoulBurstRing.mat be7581bcee589ca494c330586f6376b247ab10d1
+Reviewed-Content-Hash: tools/soul-burst-check/SoulBurstCheck.cs d6648b7831306dfc8e88ab2b43e872fe88f9b5fe

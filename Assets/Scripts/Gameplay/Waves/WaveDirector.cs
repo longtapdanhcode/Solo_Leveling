@@ -114,6 +114,12 @@ namespace MicroArena.Gameplay.Waves
         /// <summary>True while the debug invulnerability is on.</summary>
         public bool IsDebugInvulnerable => _invulnerable;
 
+        /// <summary>True when <paramref name="target"/> is this wave's boss (Soul Burst does not knock bosses back).</summary>
+        public bool IsBoss(IDamageable target)
+        {
+            return _boss != null && ReferenceEquals(target, _boss);
+        }
+
         /// <summary>Injects dependencies when building the scene. Call before the object is activated.</summary>
         public void Configure(WaveConfig config, RunState runState, Health player, PlayerController playerController,
             RotatingTrap trap, CombatQueryConfig queryConfig)

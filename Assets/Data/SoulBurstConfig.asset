@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0480387c85b749e0983e6037c348d2e, type: 3}
+  m_Name: SoulBurstConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.SoulBurstConfig
+  _ragePerKill: 5
+  _maxRage: 100
+  _damage: 120
+  _shockwaveRadius: 6
+  _knockbackDistance: 4
+  _ringDuration: 0.5
+  _ringHeightOffset: -0.95
+  _ringThickness: 0.05
