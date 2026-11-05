@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using MicroArena.Gameplay.Cards;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
 using UnityEngine;
@@ -31,9 +32,13 @@ namespace MicroArena.Gameplay.Player
         private readonly List<IDamageable> _scratch = new List<IDamageable>();
         private Func<float> _roll = () => Random.value;
         private Vector3 _aimDirection = Vector3.forward;
+        private ModifierStack _modifiers;
+        private readonly List<IDamageable> _struck = new List<IDamageable>();
 
         /// <summary>Raised for every target damaged by a swing: (target, damage packet).</summary>
         public event Action<IDamageable, DamageInfo> OnHitLanded;
+        /// <summary>Raised after every swing's damage: (zero-based step, targets the swing damaged). The list is reused; read it during the call.</summary>
+        public event Action<int, IReadOnlyList<IDamageable>> OnSwingResolved;
 
         /// <summary>Current combo state, for feedback.</summary>
         public ComboState State => _combo.State;
@@ -58,6 +63,15 @@ namespace MicroArena.Gameplay.Player
         public void SetRandomSource(Func<float> roll)
         {
             _roll = roll;
+        }
+
+        /// <summary>
+        /// Sets the run's card modifiers (story 004): damage multiplier and crit (incl. Cuồng Nộ below its HP threshold) and slash radius. Detection
+        /// range is never scaled. Null = no modifiers (PlayerSandbox).
+        /// </summary>
+        public void SetModifiers(ModifierStack modifiers)
+        {
+            _modifiers = modifiers;
         }
 
         /// <summary>Returns the combo to step 1 and idle.</summary>
@@ -89,8 +103,9 @@ namespace MicroArena.Gameplay.Player
 
             // Colliders move via transform without Rigidbodies and auto-sync is off: sync once before querying.
             Physics.SyncTransforms();
-            _query.Gather(transform.position, _config.DetectionRange, _enemyLayers, transform, _scratch);
-            IDamageable target = TargetSelector.FindNearest(transform.position, _scratch, _config.DetectionRange);
+            float detectionRange = _modifiers != null ? _modifiers.DetectionRange(_config.DetectionRange) : _config.DetectionRange;
+            _query.Gather(transform.position, detectionRange, _enemyLayers, transform, _scratch);
+            IDamageable target = TargetSelector.FindNearest(transform.position, _scratch, detectionRange);
 
             if (target != null)
             {
@@ -121,13 +136,18 @@ namespace MicroArena.Gameplay.Player
         private void ApplySwing(int step)
         {
             ComboStep data = _config.ComboSteps[step];
-            bool critical = _roll() < _config.CritChance;
-            float damage = data.Damage * (critical ? _config.CritMultiplier : 1f);
+            float healthFraction = _health.Max > 0f ? _health.Current / _health.Max : 1f; // Cuồng Nộ condition
+            float critChance = _modifiers != null ? _modifiers.CritChanceAt(_config.CritChance, healthFraction) : _config.CritChance;
+            bool critical = _roll() < critChance;
+            float baseDamage = data.Damage * (_modifiers != null ? _modifiers.DamageMultiplierAt(healthFraction) : 1f);
+            float damage = baseDamage * (critical ? _config.CritMultiplier : 1f);
             float halfArc = _config.SlashArcDegrees * 0.5f;
+            float slashRadius = _modifiers != null ? _modifiers.SwingRadius(_config.SlashRadius) : _config.SlashRadius;
             Vector3 origin = transform.position;
 
-            _query.Gather(origin, _config.SlashRadius, _enemyLayers, transform, _scratch);
+            _query.Gather(origin, slashRadius, _enemyLayers, transform, _scratch);
             bool landed = false;
+            _struck.Clear();
             foreach (IDamageable candidate in _scratch)
             {
                 Vector3 offset = candidate.Transform.position - origin;
@@ -148,6 +168,7 @@ namespace MicroArena.Gameplay.Player
                 if (candidate.TakeDamage(info))
                 {
                     landed = true;
+                    _struck.Add(candidate);
                     OnHitLanded?.Invoke(candidate, info);
                 }
             }
@@ -156,6 +177,7 @@ namespace MicroArena.Gameplay.Player
             {
                 _hitStop.Request(_config.HitStopDuration);
             }
+            OnSwingResolved?.Invoke(step, _struck);
         }
     }
 }

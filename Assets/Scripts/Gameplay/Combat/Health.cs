@@ -86,9 +86,23 @@ namespace MicroArena.Gameplay.Combat
             _model.GrantInvulnerability(seconds);
         }
 
-        /// <summary>Restores HP and the revive for a new run.</summary>
+        /// <summary>Sets the flat max HP bonus from cards (story 004). Does not heal.</summary>
+        public void SetMaxHealthBonus(float bonus)
+        {
+            _model.SetMaxHealthBonus(bonus);
+        }
+
+        /// <summary>Heals up to max HP. Ignored when dead.</summary>
+        /// <returns>True if any HP was restored.</returns>
+        public bool Heal(float amount)
+        {
+            return _model.Heal(amount);
+        }
+
+        /// <summary>Drops the card max HP bonus, then restores HP and the revive for a new run (no stale bonus HP after a restart).</summary>
         public void ResetForNewRun()
         {
+            _model.SetMaxHealthBonus(0f);
             _model.ResetForNewRun();
         }
 

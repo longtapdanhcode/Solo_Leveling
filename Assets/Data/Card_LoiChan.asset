@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062a4d1305d834cacbcb7c185c3d88cf, type: 3}
+  m_Name: Card_LoiChan
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.CardConfig
+  _id: loi_chan
+  _displayName: "L\xF4i Ch\u1EA5n"
+  _description: "\u0110\xF2n th\u1EE9 3 c\u1EE7a combo ph\xF3ng ra tia s\xE9t gi\u1EADt lan 3 m\u1EE5c ti\xEAu xung quanh (25 DMG \u0111i\u1EC7n)."
+  _rarity: 1
+  _effect: 4
+  _percent: 0
+  _healAmount: 0
+  _maxHealthBonus: 0
+  _amount: 25
+  _healPercentPerKill: 0
+  _critChanceBonus: 0
+  _maxStacks: 0

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062a4d1305d834cacbcb7c185c3d88cf, type: 3}
+  m_Name: Card_VongXoayHuyetThan
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.CardConfig
+  _id: vong_xoay
+  _displayName: "V\xF2ng Xo\xE1y Huy\u1EBFt Th\u1EA7n"
+  _description: "T\u0103ng 30% b\xE1n k\xEDnh vung ki\u1EBFm. Ti\xEAu di\u1EC7t 1 qu\xE1i h\u1ED3i 4% m\xE1u t\u1ED1i \u0111a."
+  _rarity: 2
+  _effect: 6
+  _percent: 30
+  _healAmount: 0
+  _maxHealthBonus: 0
+  _amount: 0
+  _healPercentPerKill: 4
+  _critChanceBonus: 0
+  _maxStacks: 0

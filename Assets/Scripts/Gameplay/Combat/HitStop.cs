@@ -50,17 +50,16 @@ namespace MicroArena.Gameplay.Combat
     }
 
     /// <summary>
-    /// Freezes the game for a short time with <see cref="Time.timeScale"/> = 0 and always restores it. The
+    /// Freezes the game for a short time through <see cref="GamePause.SetHitStop"/> and always ends the freeze. The
     /// countdown runs on unscaled time, so the freeze cannot hang. Scaled-time timers (dash recharge, i-frames,
     /// revive invulnerability) simply pause during the freeze and resume afterwards; none depends on this class.
     /// </summary>
-    /// <remarks>Limitation: a pause menu (story 007) that sets timeScale 0 during a freeze would be overwritten
-    /// by the restore; the HUD story should pause via its own flag or call <see cref="Cancel"/>.</remarks>
+    /// <remarks>Never writes <see cref="Time.timeScale"/> itself: <see cref="GamePause"/> does, so a hit-stop that ends
+    /// while a pause owner (card pick, later the pause menu) is held leaves the game paused.</remarks>
     public sealed class HitStop : MonoBehaviour
     {
         private readonly HitStopTimer _timer = new HitStopTimer();
         private bool _frozen;
-        private float _savedTimeScale = 1f;
         private int _requestFrame = -1;
 
         /// <summary>Requests a freeze of <paramref name="duration"/> seconds (non-stacking).</summary>
@@ -75,12 +74,11 @@ namespace MicroArena.Gameplay.Combat
             if (!_frozen)
             {
                 _frozen = true;
-                _savedTimeScale = Time.timeScale;
-                Time.timeScale = 0f;
+                GamePause.SetHitStop(true);
             }
         }
 
-        /// <summary>Ends any running freeze and restores time.</summary>
+        /// <summary>Ends any running freeze (time resumes unless something else holds a pause).</summary>
         public void Cancel()
         {
             _timer.Cancel();
@@ -109,7 +107,7 @@ namespace MicroArena.Gameplay.Combat
             if (_frozen)
             {
                 _frozen = false;
-                Time.timeScale = _savedTimeScale;
+                GamePause.SetHitStop(false);
             }
         }
     }

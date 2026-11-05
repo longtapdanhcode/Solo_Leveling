@@ -1,12 +1,12 @@
 # Story 004: Thẻ nâng cấp (9 thẻ, 3 mức hiếm)
 
 > **Epic**: micro-arena-survivor
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: Feature
 > **Type**: Logic
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-05
 
 ## Context
 
@@ -56,13 +56,18 @@
 
 ## Files
 
-- `Assets/Scripts/Gameplay/Cards/CardPool.cs`
-- `Assets/Scripts/Gameplay/Cards/CardEffects.cs`
-- `Assets/Scripts/Gameplay/Config/CardConfig.cs`
-- `Assets/Scripts/UI/CardPickScreen.cs`
-- `Assets/Tests/EditMode/Cards/CardTests.cs`
-
----
+- `Assets/Scripts/Gameplay/Combat/GamePause.cs` — created (sole writer of Time.timeScale: card-pick pause + hit-stop)
+- `Assets/Scripts/Gameplay/Combat/HitStop.cs`, `HealthModel.cs`, `Health.cs` — modified
+- `Assets/Scripts/Gameplay/Config/CardConfig.cs`, `CardPoolConfig.cs`, `CardEffectConfig.cs` — created
+- `Assets/Scripts/Gameplay/Cards/ModifierStack.cs`, `CardPool.cs`, `CardEffects.cs`, `CardController.cs`, `ICardPickView.cs`, `BurnStatus.cs`, `ChainTargets.cs`, `ForcedCards.cs`, `CardEffectRunner.cs` — created
+- `Assets/Scripts/Gameplay/Enemies/IEnemyTargetOverride.cs` — created; `EnemyBase.cs`, `Crawler.cs` — modified (decoy redirect)
+- `Assets/Scripts/UI/CardPickScreen.cs` — created (UGUI, keys 1/2/3 + mouse + gamepad, no Find call)
+- `Assets/Scripts/Gameplay/Player/AutoAttack.cs`, `PlayerController.cs`, `Dash.cs` — modified (modifiers, events, no move/dash while paused)
+- `Assets/Scripts/Gameplay/Waves/WaveDirector.cs` — modified (SetAutoContinueCardPick, OnEnemyKilled, enemy target override)
+- `Assets/Scripts/Gameplay/Editor/ArenaSceneBuilder.cs` — modified (9 card assets, CardEffectConfig, CardController + runner)
+- `Assets/Data/Card_*.asset` (9), `CardPoolConfig.asset`, `CardEffectConfig.asset`; `Assets/Materials/Decoy.mat`, `MeteorMarker.mat` — created
+- `Assets/Scenes/Arena.unity` — regenerated
+- `tools/card-rule-check/CardRuleCheck.cs`, `README.md` — created (rule check kept outside Assets/; copy in to run)
 
 ## QA Test Cases
 

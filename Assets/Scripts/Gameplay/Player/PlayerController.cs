@@ -1,5 +1,6 @@
 // Implements: design/game-brief.md MVP 1 (WASD movement + facing, no mouse aiming), story-001.
 
+using MicroArena.Gameplay.Cards;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
 using UnityEngine;
@@ -28,6 +29,7 @@ namespace MicroArena.Gameplay.Player
         private bool _hasAimOverride;
         private Vector3 _aimOverride;
         private bool _movementLocked;
+        private ModifierStack _modifiers;
 
         /// <summary>Direction faced from the last WASD input (ground plane, normalized). Dash uses this when standing still.</summary>
         public Vector3 FacingDirection => _facing;
@@ -67,6 +69,12 @@ namespace MicroArena.Gameplay.Player
             _movementLocked = locked;
         }
 
+        /// <summary>Sets the run's card modifiers (story 004): walking speed only, never the dash. Null = no modifiers.</summary>
+        public void SetModifiers(ModifierStack modifiers)
+        {
+            _modifiers = modifiers;
+        }
+
         /// <summary>Restores HP, revive, dash charges and the combo for a new run.</summary>
         public void ResetForNewRun()
         {
@@ -92,6 +100,12 @@ namespace MicroArena.Gameplay.Player
 
         private void Update()
         {
+            // A pause owner (card pick) is held: WASD must not turn Kaelen at time scale 0. Hit-stop alone does not block this.
+            if (GamePause.IsPaused)
+            {
+                MoveDirection = Vector3.zero;
+                return;
+            }
             Vector2 input = Vector2.ClampMagnitude(_move.ReadValue<Vector2>(), 1f);
             MoveDirection = new Vector3(input.x, 0f, input.y);
 
@@ -106,7 +120,8 @@ namespace MicroArena.Gameplay.Player
                 _facing = MoveDirection.normalized;
                 if (!_movementLocked)
                 {
-                    transform.position += MoveDirection * (_config.MoveSpeed * Time.deltaTime);
+                    float speed = _config.MoveSpeed * (_modifiers != null ? _modifiers.MoveSpeedMultiplier : 1f);
+                    transform.position += MoveDirection * (speed * Time.deltaTime);
                 }
             }
         }

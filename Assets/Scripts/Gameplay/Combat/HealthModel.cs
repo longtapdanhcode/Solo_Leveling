@@ -30,6 +30,7 @@ namespace MicroArena.Gameplay.Combat
     {
         private readonly PlayerConfig _config;
         private float _invulnerableRemaining;
+        private float _maxBonus;
 
         /// <summary>Raised when HP changes: (current, max).</summary>
         public event Action<float, float> OnHealthChanged;
@@ -48,8 +49,10 @@ namespace MicroArena.Gameplay.Combat
 
         /// <summary>Current HP.</summary>
         public float Current { get; private set; }
-        /// <summary>Maximum HP.</summary>
-        public float Max => _config.MaxHealth;
+        /// <summary>Maximum HP: config max plus the card bonus (story 004).</summary>
+        public float Max => _config.MaxHealth + _maxBonus;
+        /// <summary>Flat max HP added by cards.</summary>
+        public float MaxBonus => _maxBonus;
         /// <summary>Current state.</summary>
         public HealthState State { get; private set; } = HealthState.Alive;
         /// <summary>True while the revive has not been used this run.</summary>
@@ -105,7 +108,36 @@ namespace MicroArena.Gameplay.Combat
             }
         }
 
-        /// <summary>Restores full HP, the revive and clears invulnerability for a new run.</summary>
+        /// <summary>
+        /// Sets the flat max HP bonus (negative values count as 0). Current HP is not raised; it is clamped down if the
+        /// new max is lower. Raises <see cref="OnHealthChanged"/>.
+        /// </summary>
+        public void SetMaxHealthBonus(float bonus)
+        {
+            _maxBonus = Math.Max(0f, bonus);
+            Current = Math.Min(Current, Max);
+            OnHealthChanged?.Invoke(Current, Max);
+        }
+
+        /// <summary>Heals up to <see cref="Max"/>. Ignored while Dead or for amounts of 0 or less.</summary>
+        /// <returns>True if any HP was restored.</returns>
+        public bool Heal(float amount)
+        {
+            if (State == HealthState.Dead || amount <= 0f)
+            {
+                return false;
+            }
+            float before = Current;
+            Current = Math.Min(Max, Current + amount);
+            if (Current <= before)
+            {
+                return false;
+            }
+            OnHealthChanged?.Invoke(Current, Max);
+            return true;
+        }
+
+        /// <summary>Restores full HP (to the current <see cref="Max"/>, including any bonus still set), the revive and clears invulnerability for a new run.</summary>
         public void ResetForNewRun()
         {
             State = HealthState.Alive;

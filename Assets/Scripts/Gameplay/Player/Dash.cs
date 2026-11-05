@@ -29,6 +29,8 @@ namespace MicroArena.Gameplay.Player
 
         /// <summary>Raised when the charge count changes: (current, max).</summary>
         public event Action<int, int> OnChargesChanged;
+        /// <summary>Raised when a dash starts: (Kaelen's position before moving). Story 004 decoy and meteor.</summary>
+        public event Action<Vector3> OnDashStarted;
 
         /// <summary>Stored charges.</summary>
         public int Charges => _model.Charges;
@@ -79,12 +81,14 @@ namespace MicroArena.Gameplay.Player
 
         private void Update()
         {
-            if (_health.IsAlive && _dashAction.WasPressedThisFrame() && _model.TryStart())
+            // No dash while a pause owner (card pick) is held: it would place decoys or meteors behind the screen.
+            if (_health.IsAlive && !GamePause.IsPaused && _dashAction.WasPressedThisFrame() && _model.TryStart())
             {
                 _direction = _player.MoveDirection.sqrMagnitude > 0f ? _player.MoveDirection.normalized : _player.FacingDirection;
                 _previousProgress = 0f;
                 _health.GrantInvulnerability(_config.DashInvulnerability);
                 _player.SetMovementLocked(true);
+                OnDashStarted?.Invoke(transform.position);
             }
 
             bool wasDashing = IsDashing;

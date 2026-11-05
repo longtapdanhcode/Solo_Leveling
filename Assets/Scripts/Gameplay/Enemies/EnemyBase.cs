@@ -42,6 +42,7 @@ namespace MicroArena.Gameplay.Enemies
         private float _stunRemaining;
         private float _slideRemaining;
         private Vector3 _slideVelocity;
+        private IEnemyTargetOverride _targetOverride;
 
         /// <summary>Raised once when the enemy dies, just before its object is destroyed.</summary>
         public event Action<EnemyDied> OnDied;
@@ -63,9 +64,11 @@ namespace MicroArena.Gameplay.Enemies
         protected Health Target => _target;
         /// <summary>Area-query sizing (never null after Awake).</summary>
         protected CombatQueryConfig QueryConfig => _queryConfig;
-        /// <summary>Flat (XZ) distance to Kaelen, updated each frame before <see cref="Act"/>.</summary>
+        /// <summary>True when this frame's target point is the decoy (story 004), not Kaelen. Attacks must not hurt the decoy.</summary>
+        protected bool IsTargetingDecoy { get; private set; }
+        /// <summary>Flat (XZ) distance to Kaelen (or the decoy while <see cref="IsTargetingDecoy"/>), updated each frame before <see cref="Act"/>.</summary>
         protected float DistanceToTarget { get; private set; }
-        /// <summary>Flat unit direction to Kaelen, updated each frame before <see cref="Act"/>.</summary>
+        /// <summary>Flat unit direction to Kaelen (or the decoy), updated each frame before <see cref="Act"/>.</summary>
         protected Vector3 DirectionToTarget { get; private set; } = Vector3.forward;
         /// <summary>Colour of the body at spawn.</summary>
         protected Color BaseColor { get; private set; }
@@ -81,6 +84,12 @@ namespace MicroArena.Gameplay.Enemies
             {
                 _queryConfig = queryConfig;
             }
+        }
+
+        /// <summary>Sets the point to chase instead of Kaelen while it exists (story 004 decoy). Null = always Kaelen.</summary>
+        public void SetTargetOverride(IEnemyTargetOverride targetOverride)
+        {
+            _targetOverride = targetOverride;
         }
 
         /// <summary>Initialises HP, the kinematic body and caches the renderer. Overrides must call the base.</summary>
@@ -196,7 +205,14 @@ namespace MicroArena.Gameplay.Enemies
                 return;
             }
 
-            Vector3 toTarget = _target.transform.position - transform.position;
+            Vector3 aimPoint = _target.transform.position;
+            IsTargetingDecoy = false;
+            if (_targetOverride != null && _targetOverride.TryGetTargetPosition(out Vector3 decoy))
+            {
+                aimPoint = decoy;
+                IsTargetingDecoy = true;
+            }
+            Vector3 toTarget = aimPoint - transform.position;
             toTarget.y = 0f;
             DistanceToTarget = toTarget.magnitude;
             if (DistanceToTarget > 0f)

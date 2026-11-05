@@ -80,6 +80,7 @@ namespace MicroArena.Gameplay.Waves
         private float _surviveRemaining = -1f;
         private PendingAction _pending;
         private float _pendingTimer;
+        private IEnemyTargetOverride _targetOverride;
 
         /// <summary>Raised when a wave starts: (1-based wave number).</summary>
         public event Action<int> OnWaveStarted;
@@ -89,6 +90,8 @@ namespace MicroArena.Gameplay.Waves
         public event Action<int, int> OnRemainingChanged;
         /// <summary>Raised after waves 1-9: (cleared wave). Story 004 shows the cards, then calls <see cref="ContinueFromCardPick"/>.</summary>
         public event Action<int> OnCardPickRequested;
+        /// <summary>Raised for every enemy death (any cause, any phase), before the wave counts it. Story 004 heals on kill here.</summary>
+        public event Action<EnemyDied> OnEnemyKilled;
         /// <summary>Raised when a run restarts, after Kaelen's HP, revive, dash and combo are reset. Story 004 clears cards here.</summary>
         public event Action OnRunReset;
 
@@ -121,6 +124,22 @@ namespace MicroArena.Gameplay.Waves
             _playerController = playerController;
             _trap = trap;
             _queryConfig = queryConfig;
+        }
+
+        /// <summary>Turns the automatic card pick continue on or off. The story-004 Arena scene sets it off (CardController continues).</summary>
+        public void SetAutoContinueCardPick(bool enabled)
+        {
+            _autoContinueCardPick = enabled;
+        }
+
+        /// <summary>Sets the decoy provider passed to every enemy spawned from now on (and to the living ones). Null = none.</summary>
+        public void SetEnemyTargetOverride(IEnemyTargetOverride targetOverride)
+        {
+            _targetOverride = targetOverride;
+            foreach (EnemyBase enemy in _alive)
+            {
+                enemy.SetTargetOverride(targetOverride);
+            }
         }
 
         /// <summary>Leaves the card pick and starts the next wave. Ignored outside the card pick.</summary>
@@ -315,9 +334,10 @@ namespace MicroArena.Gameplay.Waves
             }
         }
 
-        private void HandleEnemyDied(EnemyBase enemy)
+        private void HandleEnemyDied(EnemyBase enemy, EnemyDied died)
         {
             _alive.Remove(enemy);
+            OnEnemyKilled?.Invoke(died);
             if (!_waveActive)
             {
                 return;
@@ -341,7 +361,8 @@ namespace MicroArena.Gameplay.Waves
             position.y = prefab.transform.position.y; // prefabs are saved resting on the floor
             EnemyBase enemy = Instantiate(prefab, position, Quaternion.identity, _staging);
             enemy.Configure(config, _player, _queryConfig);
-            enemy.OnDied += _ => HandleEnemyDied(enemy);
+            enemy.SetTargetOverride(_targetOverride);
+            enemy.OnDied += died => HandleEnemyDied(enemy, died);
             if (enemy is VoidCaster caster)
             {
                 caster.OnFired += TrackProjectile;

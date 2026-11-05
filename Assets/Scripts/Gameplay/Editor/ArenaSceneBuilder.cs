@@ -10,11 +10,13 @@
 using System;
 using System.Collections.Generic;
 using MicroArena.Gameplay.Arena;
+using MicroArena.Gameplay.Cards;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
 using MicroArena.Gameplay.Enemies;
 using MicroArena.Gameplay.Player;
 using MicroArena.Gameplay.Waves;
+using MicroArena.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -115,7 +117,52 @@ namespace MicroArena.Gameplay.Editor
                 () => CreateWaveConfig(pools, miniBossPrefab, miniBossConfig, finalBossPrefab, finalBossConfig));
             RotatingTrap trapPrefab = GetOrCreatePrefab<RotatingTrap>($"{PrefabsFolder}/RotatingTrap.prefab", () => BuildTrap(trapMat, waveConfig));
 
-            BuildSceneContents(waveConfig, floorMat, wallMat, kaelenPrefab, trapPrefab, queryConfig);
+            // Story 004: the 9 cards (kich_ban_chuan.md section 6; descriptions are the script wording). Created only when missing.
+            var newCards = new List<CardConfig>();
+            CardConfig[] cards =
+            {
+                GetOrCreateCard("Card_SucManhTho", newCards, () => CreateCard("suc_manh_tho", "Sức Mạnh Thô",
+                    "Tăng 15% sát thương tấn công cơ bản.", CardRarity.Common, CardEffectKind.DamagePercent, percent: 15f)),
+                GetOrCreateCard("Card_GiayBao", newCards, () => CreateCard("giay_bao", "Giày Bão",
+                    "Tăng 12% tốc độ di chuyển.", CardRarity.Common, CardEffectKind.MoveSpeedPercent, percent: 12f)),
+                GetOrCreateCard("Card_HuyetNhu", newCards, () => CreateCard("huyet_nhu", "Huyết Nhũ",
+                    "Hồi phục ngay 30 HP và tăng thêm 20 HP tối đa.", CardRarity.Common, CardEffectKind.HealAndMaxHealth,
+                    healAmount: 30f, maxHealthBonus: 20f)),
+                GetOrCreateCard("Card_VetChemHoaNguc", newCards, () => CreateCard("hoa_nguc", "Vết Chém Hỏa Ngục",
+                    "Đòn đánh thường gây hiệu ứng thiêu đốt (gây 10 DMG/s trong 3s, cộng dồn 3 lần).", CardRarity.Rare,
+                    CardEffectKind.Burn, amount: 10f)),
+                GetOrCreateCard("Card_LoiChan", newCards, () => CreateCard("loi_chan", "Lôi Chấn",
+                    "Đòn thứ 3 của combo phóng ra tia sét giật lan 3 mục tiêu xung quanh (25 DMG điện).", CardRarity.Rare,
+                    CardEffectKind.ChainLightning, amount: 25f)),
+                GetOrCreateCard("Card_DichChuyenPhanThan", newCards, () => CreateCard("phan_than", "Dịch Chuyển Phân Thân",
+                    "Khi Dash để lại một ảo ảnh thu hút quái đánh trong 1.5 giây.", CardRarity.Rare,
+                    CardEffectKind.Decoy, amount: 1.5f)),
+                GetOrCreateCard("Card_VongXoayHuyetThan", newCards, () => CreateCard("vong_xoay", "Vòng Xoáy Huyết Thần",
+                    "Tăng 30% bán kính vung kiếm. Tiêu diệt 1 quái hồi 4% máu tối đa.", CardRarity.Legendary,
+                    CardEffectKind.BloodVortex, percent: 30f, healPercentPerKill: 4f)),
+                GetOrCreateCard("Card_SaoBangGiangTran", newCards, () => CreateCard("sao_bang", "Sao Băng Giáng Trần",
+                    "Sau cú Dash, một thiên thạch rơi ngay vào vị trí cũ gây 80 DMG diện rộng và làm choáng 1s.", CardRarity.Legendary,
+                    CardEffectKind.Meteor, amount: 80f)),
+                GetOrCreateCard("Card_CuongNoHuVo", newCards, () => CreateCard("cuong_no", "Cuồng Nộ Hư Vô",
+                    "Khi HP xuống dưới 30%, sát thương tăng 100% và luôn nhận thêm 50% tỉ lệ chí mạng.", CardRarity.Legendary,
+                    CardEffectKind.VoidRage, percent: 100f, critChanceBonus: 0.5f)),
+            };
+            CardPoolConfig cardPool = GetOrCreateAsset($"{DataFolder}/CardPoolConfig.asset", () => CreateCardPool(cards));
+            AddToPool(cardPool, newCards); // an existing pool gains only cards created in this run (designer removals survive)
+
+            Material decoyMat = GetOrCreateMaterial("Decoy", new Color(0.55f, 0.8f, 1f), lit);
+            Material meteorMat = GetOrCreateMaterial("MeteorMarker", new Color(1f, 0.35f, 0.05f), lit);
+            CardEffectConfig cardEffects = GetOrCreateAsset($"{DataFolder}/CardEffectConfig.asset", () =>
+            {
+                var effects = ScriptableObject.CreateInstance<CardEffectConfig>();
+                var so = new SerializedObject(effects);
+                so.FindProperty("_decoyMaterial").objectReferenceValue = decoyMat;
+                so.FindProperty("_meteorMaterial").objectReferenceValue = meteorMat;
+                so.ApplyModifiedPropertiesWithoutUndo();
+                return effects;
+            });
+
+            BuildSceneContents(waveConfig, floorMat, wallMat, kaelenPrefab, trapPrefab, queryConfig, cardPool, cardEffects);
 
             if (!EditorSceneManager.SaveScene(scene, ScenePath))
             {
@@ -216,6 +263,81 @@ namespace MicroArena.Gameplay.Editor
             so.FindProperty("_biteRange").floatValue = biteRange;
             so.ApplyModifiedPropertiesWithoutUndo();
             return config;
+        }
+
+        private static CardConfig GetOrCreateCard(string fileName, List<CardConfig> created, Func<CardConfig> create)
+        {
+            string path = $"{DataFolder}/{fileName}.asset";
+            bool existed = AssetDatabase.LoadAssetAtPath<CardConfig>(path) != null;
+            CardConfig card = GetOrCreateAsset(path, create);
+            if (!existed)
+            {
+                created.Add(card);
+            }
+            return card;
+        }
+
+        private static CardConfig CreateCard(string id, string displayName, string description, CardRarity rarity,
+            CardEffectKind effect, float percent = 0f, float healAmount = 0f, float maxHealthBonus = 0f, float amount = 0f,
+            float healPercentPerKill = 0f, float critChanceBonus = 0f)
+        {
+            var card = ScriptableObject.CreateInstance<CardConfig>();
+            var so = new SerializedObject(card);
+            so.FindProperty("_id").stringValue = id;
+            so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("_description").stringValue = description;
+            so.FindProperty("_rarity").enumValueIndex = (int)rarity;
+            so.FindProperty("_effect").enumValueIndex = (int)effect;
+            so.FindProperty("_percent").floatValue = percent;
+            so.FindProperty("_healAmount").floatValue = healAmount;
+            so.FindProperty("_maxHealthBonus").floatValue = maxHealthBonus;
+            so.FindProperty("_amount").floatValue = amount;
+            so.FindProperty("_healPercentPerKill").floatValue = healPercentPerKill;
+            so.FindProperty("_critChanceBonus").floatValue = critChanceBonus;
+            so.FindProperty("_maxStacks").intValue = 0; // repeats allowed and stacking (decision 2026-11-05)
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return card;
+        }
+
+        private static void AddToPool(CardPoolConfig pool, List<CardConfig> cards)
+        {
+            var so = new SerializedObject(pool);
+            SerializedProperty list = so.FindProperty("_cards");
+            bool changed = false;
+            foreach (CardConfig card in cards)
+            {
+                bool present = false;
+                for (int i = 0; i < list.arraySize; i++)
+                {
+                    present |= list.GetArrayElementAtIndex(i).objectReferenceValue == card;
+                }
+                if (!present)
+                {
+                    list.arraySize++;
+                    list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = card;
+                    changed = true;
+                }
+            }
+            if (changed)
+            {
+                so.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(pool);
+            }
+        }
+
+        // Weights and CardsPerPick keep the CardPoolConfig defaults (60/30/10, 3).
+        private static CardPoolConfig CreateCardPool(params CardConfig[] cards)
+        {
+            var pool = ScriptableObject.CreateInstance<CardPoolConfig>();
+            var so = new SerializedObject(pool);
+            SerializedProperty list = so.FindProperty("_cards");
+            list.arraySize = cards.Length;
+            for (int i = 0; i < cards.Length; i++)
+            {
+                list.GetArrayElementAtIndex(i).objectReferenceValue = cards[i];
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return pool;
         }
 
         private static GameObject BuildProjectile(Material material)
@@ -342,7 +464,7 @@ namespace MicroArena.Gameplay.Editor
         }
 
         private static void BuildSceneContents(WaveConfig config, Material floorMat, Material wallMat, PlayerController kaelenPrefab,
-            RotatingTrap trapPrefab, CombatQueryConfig queryConfig)
+            RotatingTrap trapPrefab, CombatQueryConfig queryConfig, CardPoolConfig cardPool, CardEffectConfig cardEffects)
         {
             var lightObject = new GameObject("Directional Light");
             var light = lightObject.AddComponent<Light>();
@@ -380,7 +502,15 @@ namespace MicroArena.Gameplay.Editor
             var directorObject = new GameObject("WaveDirector");
             var director = directorObject.AddComponent<WaveDirector>();
             director.Configure(config, runState, health, controller, trap, queryConfig);
+            director.SetAutoContinueCardPick(false); // story 004: CardController continues after the pick
             directorObject.AddComponent<WaveDebugOverlay>().Configure(director, health);
+
+            var cardObject = new GameObject("CardController");
+            var screen = cardObject.AddComponent<CardPickScreen>();
+            var attack = kaelenObject.GetComponent<AutoAttack>();
+            var runner = cardObject.AddComponent<CardEffectRunner>();
+            runner.Configure(cardEffects, director, attack, kaelenObject.GetComponent<Dash>(), health, ~0, queryConfig);
+            cardObject.AddComponent<CardController>().Configure(director, cardPool, controller, attack, health, screen, runner);
 
             var cameraObject = new GameObject("Main Camera") { tag = "MainCamera" };
             cameraObject.AddComponent<Camera>();

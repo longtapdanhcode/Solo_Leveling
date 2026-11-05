@@ -45,7 +45,8 @@ namespace MicroArena.Gameplay.Enemies
                     _timer -= deltaTime;
                     if (_timer <= 0f)
                     {
-                        if (DistanceToTarget <= Config.BiteRange)
+                        // A bite on the decoy does nothing (it takes no damage); only Kaelen in reach is hurt.
+                        if (!IsTargetingDecoy && DistanceToTarget <= Config.BiteRange)
                         {
                             Target.TakeDamage(new DamageInfo { Amount = Config.Damage });
                         }

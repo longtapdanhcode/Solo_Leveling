@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7deca8bc3864f10a645303652a4ade, type: 3}
+  m_Name: CardEffectConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.CardEffectConfig
+  _maxBurnStacks: 3
+  _burnDuration: 3
+  _chainComboStep: 3
+  _chainTargets: 3
+  _chainRange: 4
+  _meteorDelay: 0.4
+  _meteorRadius: 3
+  _meteorStun: 1
+  _voidRageThreshold: 0.3
+  _decoyMaterial: {fileID: 2100000, guid: 5de32e42c3f2b408397db2b83944e2c3, type: 2}
+  _meteorMaterial: {fileID: 2100000, guid: 07de41a0ff4f74414bde138a386e1ad4, type: 2}
+  _meteorMarkerLinger: 0.3
+  _meteorMarkerThickness: 0.05
