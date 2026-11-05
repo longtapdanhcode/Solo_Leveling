@@ -144,7 +144,7 @@ namespace MicroArena.Gameplay.Editor
                     "Sau cú Dash, một thiên thạch rơi ngay vào vị trí cũ gây 80 DMG diện rộng và làm choáng 1s.", CardRarity.Legendary,
                     CardEffectKind.Meteor, amount: 80f)),
                 GetOrCreateCard("Card_CuongNoHuVo", newCards, () => CreateCard("cuong_no", "Cuồng Nộ Hư Vô",
-                    "Khi HP xuống dưới 30%, sát thương tăng 100% và luôn nhận thêm 50% tỉ lệ chí mạng.", CardRarity.Legendary,
+                    "Khi HP xuống dưới 30%, sát thương tăng 100% và nhận thêm 50% tỉ lệ chí mạng.", CardRarity.Legendary,
                     CardEffectKind.VoidRage, percent: 100f, critChanceBonus: 0.5f)),
             };
             CardPoolConfig cardPool = GetOrCreateAsset($"{DataFolder}/CardPoolConfig.asset", () => CreateCardPool(cards));

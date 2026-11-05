@@ -1,7 +1,7 @@
 # Story 004: Thẻ nâng cấp (9 thẻ, 3 mức hiếm)
 
 > **Epic**: micro-arena-survivor
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: Feature
 > **Type**: Logic
 > **Estimate**: L
@@ -88,3 +88,18 @@
 
 - Depends on: `story-001-kaelen-core-combat.md`, `story-003-arena-waves.md`
 - Unlocks: `story-007-hud-game-feel.md`
+
+---
+
+## Completion Notes
+
+**Completed**: 2026-11-05
+**Criteria**: 8/8 passing (Common cards, card pick and reset: playtest `production/qa/evidence/story-004-upgrade-cards/playtest-m1.md`; Rare and Legendary cards: owner confirmed in play; Vòng Xoáy rule: `tools/card-rule-check/`, 64/64 PASS)
+**Deviations**:
+- ADVISORY: card-pick UI uses legacy `Text` + `LegacyRuntime.ttf` (deprecated; diacritics rely on OS fonts). Story 007: switch to a TextMeshPro font with Vietnamese glyphs.
+- ADVISORY: UI strings are not localized (no localization system yet).
+- ADVISORY: `GamePause` is static (reset on `SubsystemRegistration`) rather than injected.
+- ADVISORY: no EditMode tests; the rule check lives in `tools/card-rule-check/` and is copied into `Assets/` to run (see its README).
+- Decisions: Cuồng Nộ applies below 30% HP only (card text updated to match); repeated Rare/Legendary picks add their numbers; Lôi Chấn 4 m chain, Sao Băng 3 m / 0.4 s; debug-only `-arenaForceCards`.
+**Test Evidence**: waived at qa.level minimal; screenshots in `production/qa/evidence/story-004-upgrade-cards/` and `production/qa/evidence/story-004-cards.png`
+**Reviewed by**: self, no independent review

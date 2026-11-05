@@ -2,7 +2,7 @@ Reviewed-Content-Hash: Assets/Scenes/Arena.unity f99fa9019a2683553324006f2361246
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Combat/Health.cs 4d41f2815e391cf3ae0ac1ec9bb8f0e0a0dfbc9b
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Combat/HealthModel.cs 7f1fd4aa2431e40e41309460052780d8830050d0
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Combat/HitStop.cs ace5495988474e62830d2b6d28fb7b35766c10ec
-Reviewed-Content-Hash: Assets/Scripts/Gameplay/Editor/ArenaSceneBuilder.cs 3efe9edc77195b7e9a8e7cccd385e2101db29cc8
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Editor/ArenaSceneBuilder.cs e729436a5a60f99ca778666ad08cf10f9ad5aba2
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/Crawler.cs 961f535c96a2d35da3dd1246b85f9260e7c79f79
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/EnemyBase.cs 86dadd9a11262938e8d8312c3f22c49ecb0183f6
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Player/AutoAttack.cs aff52531e0061e7494d7c7cfe25f6345de001489
@@ -11,7 +11,7 @@ Reviewed-Content-Hash: Assets/Scripts/Gameplay/Player/PlayerController.cs 36f487
 Reviewed-Content-Hash: Assets/Scripts/Gameplay/Waves/WaveDirector.cs ac3de649829e715ff180687836daec70ee908283
 Reviewed-Content-Hash: Assets/Data/CardEffectConfig.asset 1c70e9181b57e4476cb8be7f97b695b71094c89a
 Reviewed-Content-Hash: Assets/Data/CardPoolConfig.asset 158acf7f292eda6ba287f8653dd30742d8de548a
-Reviewed-Content-Hash: Assets/Data/Card_CuongNoHuVo.asset a3c7c15f97001a4ddb27e0851057af33925829c9
+Reviewed-Content-Hash: Assets/Data/Card_CuongNoHuVo.asset 1222eb64c9cabfdcf2799cb8ee671bd3bdc1b01f
 Reviewed-Content-Hash: Assets/Data/Card_DichChuyenPhanThan.asset 1eb41515e94d5418c4a39921f51df38d9845df68
 Reviewed-Content-Hash: Assets/Data/Card_GiayBao.asset 2a1d37ac01f68f5bc689a3d3c1346506ca72a440
 Reviewed-Content-Hash: Assets/Data/Card_HuyetNhu.asset aabb9390937ddaff7d6a302cd24a08ac1f2aa5fd

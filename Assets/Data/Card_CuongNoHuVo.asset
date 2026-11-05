@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.CardConfig
   _id: cuong_no
   _displayName: "Cu\u1ED3ng N\u1ED9 H\u01B0 V\xF4"
-  _description: "Khi HP xu\u1ED1ng d\u01B0\u1EDBi 30%, s\xE1t th\u01B0\u01A1ng t\u0103ng 100% v\xE0 lu\xF4n nh\u1EADn th\xEAm 50% t\u1EC9 l\u1EC7 ch\xED m\u1EA1ng."
+  _description: "Khi HP xu\u1ED1ng d\u01B0\u1EDBi 30%, s\xE1t th\u01B0\u01A1ng t\u0103ng 100% v\xE0 nh\u1EADn th\xEAm 50% t\u1EC9 l\u1EC7 ch\xED m\u1EA1ng."
   _rarity: 2
   _effect: 8
   _percent: 100
