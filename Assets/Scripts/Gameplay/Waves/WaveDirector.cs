@@ -2,12 +2,16 @@
 // "Player goal & fail state", production/epics/micro-arena-survivor/story-003-arena-waves.md.
 //
 // Decisions recorded in the story thread (2026-11-04): leftovers are despawned silently (no kill, no EnemyDied)
-// when a wave ends by timer (Wave 6-7) or by the boss dying (Wave 5/10); the trap hits Kaelen only; live bolts are
-// destroyed on restart; Wave 5/10 bosses are tougher Crawler stand-ins until story 006.
+// when a wave ends by timer (Wave 6-7); the trap hits Kaelen only; live bolts are
+// destroyed on restart.
+// Story 006 (2026-11-05): Wave 5/10 spawn the real bosses. A Boss wave ends when the boss is dead AND no other enemy is
+// alive (Wave 5: the 4 escorts; Wave 10 has none, so the Void Warden's death ends the run in Victory). Once the boss is
+// dead no more escorts spawn.
 
 using System;
 using System.Collections.Generic;
 using MicroArena.Gameplay.Arena;
+using MicroArena.Gameplay.Bosses;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
 using MicroArena.Gameplay.Enemies;
@@ -86,7 +90,7 @@ namespace MicroArena.Gameplay.Waves
         public event Action<int> OnWaveStarted;
         /// <summary>Raised when a wave's goal is met: (1-based wave number). Not raised on defeat.</summary>
         public event Action<int> OnWaveEnded;
-        /// <summary>Raised when the wave progress changes: (remaining, target). Boss waves report 1/1 until the boss dies.</summary>
+        /// <summary>Raised when the wave progress changes: (remaining, target). Boss waves report 1/1 until the boss dies (0/1 while escorts remain).</summary>
         public event Action<int, int> OnRemainingChanged;
         /// <summary>Raised after waves 1-9: (cleared wave). Story 004 shows the cards, then calls <see cref="ContinueFromCardPick"/>.</summary>
         public event Action<int> OnCardPickRequested;
@@ -261,7 +265,7 @@ namespace MicroArena.Gameplay.Waves
             }
 
             int limit = _wave.PoolSpawnLimit;
-            bool poolHasMore = _wave.SpawnPool.Length > 0 && (limit < 0 || _poolSpawned < limit);
+            bool poolHasMore = _wave.SpawnPool.Length > 0 && (limit < 0 || _poolSpawned < limit) && !_bossDefeated;
             if (poolHasMore && _alive.Count < _config.MaxAlive)
             {
                 _spawnTimer -= deltaTime;
@@ -300,7 +304,7 @@ namespace MicroArena.Gameplay.Waves
             _waveActive = true;
             if (_wave.Goal == WaveGoal.Boss)
             {
-                _boss = Spawn(_wave.BossPrefab, _wave.BossConfig);
+                _boss = Spawn(_wave.BossPrefab, null, _wave.BossConfig);
             }
             OnWaveStarted?.Invoke(waveNumber);
             OnRemainingChanged?.Invoke(Remaining, RemainingTarget);
@@ -354,19 +358,26 @@ namespace MicroArena.Gameplay.Waves
                 _bossDefeated = true;
             }
             OnRemainingChanged?.Invoke(Remaining, RemainingTarget);
-            bool goalMet = _wave.Goal == WaveGoal.Boss ? _bossDefeated : _kills >= _wave.KillTarget;
+            bool goalMet = _wave.Goal == WaveGoal.Boss ? _bossDefeated && _alive.Count == 0 : _kills >= _wave.KillTarget;
             if (goalMet)
             {
                 CompleteWave();
             }
         }
 
-        private EnemyBase Spawn(EnemyBase prefab, EnemyConfig config)
+        private EnemyBase Spawn(EnemyBase prefab, EnemyConfig config, BossConfig bossConfig = null)
         {
             Vector3 position = PickSpawnPoint();
             position.y = prefab.transform.position.y; // prefabs are saved resting on the floor
             EnemyBase enemy = Instantiate(prefab, position, Quaternion.identity, _staging);
-            enemy.Configure(config, _player, _queryConfig);
+            if (enemy is BossBase boss)
+            {
+                boss.ConfigureBoss(bossConfig, _player, _queryConfig);
+            }
+            else
+            {
+                enemy.Configure(config, _player, _queryConfig);
+            }
             enemy.SetTargetOverride(_targetOverride);
             enemy.OnDied += died => HandleEnemyDied(enemy, died);
             if (enemy is VoidCaster caster)

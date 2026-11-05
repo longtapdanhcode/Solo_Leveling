@@ -54,9 +54,19 @@ namespace MicroArena.Gameplay.Enemies
         /// <summary>Current HP.</summary>
         public float CurrentHealth => _health;
         /// <summary>Kind from the config.</summary>
-        public EnemyKind Kind => _config.Kind;
+        public virtual EnemyKind Kind => _config.Kind;
         /// <summary>True while stunned (no acting).</summary>
         public bool IsStunned => _stunRemaining > 0f;
+
+        /// <summary>Starting and max HP. Bosses override this to read their <see cref="BossConfig"/> instead of an <see cref="EnemyConfig"/>.</summary>
+        protected virtual float StartingHealth => _config.MaxHealth;
+        /// <summary>Run speed in metres per second used by <see cref="Move"/>.</summary>
+        protected virtual float MoveSpeed => _config.MoveSpeed;
+        /// <summary>
+        /// True when knockback and stun in a damage packet are ignored (damage still applies). Bosses are immune to both
+        /// from every source (combo, cards, Soul Burst, revive shock) - decided 2026-11-05, story 006.
+        /// </summary>
+        protected virtual bool IgnoresCrowdControl => false;
 
         /// <summary>Tuning values of this enemy.</summary>
         protected EnemyConfig Config => _config;
@@ -105,7 +115,7 @@ namespace MicroArena.Gameplay.Enemies
             _renderer = GetComponent<Renderer>();
             SharedMaterial = _renderer.sharedMaterial;
             BaseColor = SharedMaterial.color;
-            _health = _config.MaxHealth;
+            _health = StartingHealth;
             IsAlive = true;
         }
 
@@ -125,12 +135,12 @@ namespace MicroArena.Gameplay.Enemies
             {
                 return false;
             }
-            if (info.KnockbackDistance > 0f)
+            if (!IgnoresCrowdControl && info.KnockbackDistance > 0f)
             {
                 _slideRemaining = _knockbackSlideSeconds;
                 _slideVelocity = info.KnockbackDirection * (info.KnockbackDistance / _knockbackSlideSeconds);
             }
-            if (info.StunDuration > 0f)
+            if (!IgnoresCrowdControl && info.StunDuration > 0f)
             {
                 _stunRemaining = Mathf.Max(_stunRemaining, info.StunDuration);
                 OnStunned();
@@ -147,7 +157,7 @@ namespace MicroArena.Gameplay.Enemies
         /// Removes the enemy without a death: <see cref="OnDied"/> is NOT raised, so it counts as no kill.
         /// Used by the wave director to clear leftovers when a wave ends by timer or boss kill, and on restart.
         /// </summary>
-        public void DespawnSilently()
+        public virtual void DespawnSilently()
         {
             IsAlive = false;
             Destroy(gameObject);
@@ -161,10 +171,15 @@ namespace MicroArena.Gameplay.Enemies
         {
         }
 
+        /// <summary>Called by <see cref="Die"/> before <see cref="OnDied"/> is raised, so listeners see the enemy already cleaned up.</summary>
+        protected virtual void OnDying()
+        {
+        }
+
         /// <summary>Moves on the ground plane at <see cref="EnemyConfig.MoveSpeed"/>.</summary>
         protected void Move(Vector3 direction, float deltaTime)
         {
-            transform.position += direction * (_config.MoveSpeed * deltaTime);
+            transform.position += direction * (MoveSpeed * deltaTime);
         }
 
         /// <summary>Tints this enemy only. The first call gives it its own material copy.</summary>
@@ -182,7 +197,8 @@ namespace MicroArena.Gameplay.Enemies
         protected void Die()
         {
             IsAlive = false;
-            OnDied?.Invoke(new EnemyDied { Kind = _config.Kind, Position = transform.position });
+            OnDying();
+            OnDied?.Invoke(new EnemyDied { Kind = Kind, Position = transform.position });
             Destroy(gameObject);
         }
 

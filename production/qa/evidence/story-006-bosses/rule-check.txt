@@ -1,0 +1,90 @@
+PASS config: MinTelegraphSeconds == 1 (got 1)
+PASS config: AttackCooldown == 3 (got 3)
+PASS config: Gargoyle HP == 600 (got 600)
+PASS config: SlamDamage == 25 (got 25)
+PASS config: SlamRadius == 4 (got 4)
+PASS config: SlamTelegraphSeconds == 1 (got 1)
+PASS config: Void Warden HP == 2000 (got 2000)
+PASS config: PhaseTwoThreshold == 0.5 (got 0.5)
+PASS config: SlashDamage == 30 (got 30)
+PASS config: SlashCount == 3
+PASS config: BurstDamage == 40 (got 40)
+PASS config: BurstRadius == 4 (got 4)
+PASS config: MeteorDamage == 20 (got 20)
+PASS config: MeteorCount == 5
+PASS config: MeteorIntervalSeconds == 8 (got 8)
+PASS config: MeteorRadius == 2 (got 2)
+PASS config: every attack telegraph >= 1 s
+PASS asset: Assets/Data/BossConfig.asset exists with 600 / 2000 HP, 25 / 30 / 40 / 20 DMG
+PASS telegraph: a 0.3 s slam warning is raised to MinTelegraphSeconds (1 s)
+PASS circle: point 3.9 m from the centre is inside
+PASS circle: point exactly on the 4 m edge is inside
+PASS circle: point 4.1 m away is outside
+PASS circle: height is ignored (flat test)
+PASS fan: straight ahead at 5 m is inside
+PASS fan: 40 degrees off-axis at 4.6 m is inside
+PASS fan: 79 degrees off-axis is outside (half angle 45)
+PASS fan: behind the boss is outside
+PASS fan: beyond the 8 m length is outside
+PASS view: fan mesh rim matches the hit-test shape (same origin, direction, length, angle)
+PASS view: Dispose removes the drawing
+PASS gargoyle: target at 2 m starts the slam (one red circle, boss stops)
+PASS gargoyle: slam circle is centred on the boss, radius 4, 25 DMG
+PASS gargoyle: no damage before the telegraph resolves (after 0.96 s)
+PASS gargoyle: slam lands after 1 s (got 1.02 s) for exactly 25 to Kaelen inside
+PASS gargoyle: telegraph removed after resolving
+PASS gargoyle: next slam starts 3 s after the last one landed (got 3.02 s)
+PASS gargoyle: Kaelen outside the circle at resolve time takes no damage
+PASS gargoyle: target at 10 m: chases, no telegraph
+PASS warden: first attack is the triple slash (one red fan placed)
+PASS warden: fan aimed at the target, length 8, 90 degrees, 30 DMG
+PASS decoy: the fan already placed keeps its direction
+PASS decoy: the placed fan still resolves normally and hits Kaelen inside it (30)
+PASS decoy: the next fan is aimed at the decoy (+X), Kaelen (+Z) is outside it
+PASS warden: exactly 3 fans in one triple slash (got 3), each resolving for 30
+PASS warden: after the triple slash the next attack is the pull
+PASS pull: starts with a wind-up circle (radius 14, damage 0, >= 1 s) before any pull
+PASS pull: no pull during the wind-up; first pull step after 1.24 s (>= 1 s)
+PASS pull: each step <= PullSpeed * dt and points at the centre
+PASS pull: lasts PullDurationSeconds (2 s, got 2.00)
+PASS pull: ComputePullStep never overshoots the centre
+PASS pull: no pull beyond the pull radius
+PASS pull: dash speed 25 m/s > pull 3 m/s and > walk; pull during one dash 0.6 m < dash 5 m
+PASS pull: a dash away from 4 m ends outside the 4 m burst circle (at 8.40 m)
+PASS burst: circle at the pull centre, radius 4, 40 DMG
+PASS burst: no damage before the circle resolves
+PASS burst: Kaelen inside takes exactly 40
+PASS warden: 3 s cooldown running after the burst (left 2.92), next attack is the slash
+PASS phase 1: no meteors in 20 s at full HP
+PASS phase: exactly 50% HP is still phase 1 (rule: strictly below 50%)
+PASS phase: HP below 50% enters phase 2
+PASS phase: latched (stays phase 2 even at full HP), event raised once, no meteors before 8 s
+PASS meteors: 5 red circles (radius 2, 20 DMG) after 8 s of phase 2 (got 5)
+PASS meteors: points inside the scatter square, warning >= 1 s
+PASS meteors: 5 more after another 8 s (total 10)
+PASS meteors: Kaelen far away took no damage
+PASS meteors: Kaelen under a meteor takes 20
+PASS stop: 5 pending meteors cleared, no damage and no new telegraph in 30 s
+PASS pause: GamePause.Acquire sets Time.timeScale 0 (bosses tick on Time.deltaTime)
+PASS pause: no telegraph progress and no damage while paused
+PASS pause: released -> Time.timeScale 1
+PASS boss: Gargoyle spawns with 600 HP, Kind Boss
+PASS boss: Void Warden spawns with 2000 HP
+PASS immune: Gargoyle lost exactly 220 HP but was not stunned or pushed
+PASS immune: Warden lost exactly 220 HP but was not stunned or pushed
+PASS warden: an attack draws its telegraph on the floor
+PASS death: telegraphs are already gone when OnDied listeners (Victory) run
+PASS death: Void Warden death clears every telegraph and drawing; no damage afterwards
+PASS reset: Gargoyle slam telegraph drawn
+PASS reset: destroying the boss (run reset / despawn) clears its telegraphs; no damage afterwards
+PASS waves: Wave 5 = Gargoyle Tyrant + BossConfig, 4 Crawler escorts
+PASS waves: Wave 10 = Void Warden + BossConfig, no escorts
+PASS waves: stand-in boss assets are gone
+PASS waves: IsBoss(Gargoyle) is true (Soul Burst's boss predicate stays consistent)
+PASS wave 5: Gargoyle dead with 4 escorts alive -> wave NOT complete
+PASS wave 5: 1 escort left -> still not complete
+PASS wave 5: last escort dies -> wave complete (card pick)
+PASS wave 5: escorts dead, Gargoyle alive -> not complete
+PASS wave 5: Gargoyle dies last -> complete
+PASS wave 10: Void Warden death -> Victory
+BossCheck: ALL PASS

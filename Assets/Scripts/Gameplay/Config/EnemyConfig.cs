@@ -17,6 +17,8 @@ namespace MicroArena.Gameplay.Config
         VoidCaster,
         /// <summary>Suicide runner: flashes red near Kaelen, then explodes.</summary>
         VolatileHusk,
+        /// <summary>The wave 5 / wave 10 bosses of story 006 (configured by <see cref="BossConfig"/>, not by an <see cref="EnemyConfig"/>).</summary>
+        Boss,
     }
 
     /// <summary>

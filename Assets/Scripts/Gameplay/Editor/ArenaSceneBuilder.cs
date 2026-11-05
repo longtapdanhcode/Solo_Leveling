@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using MicroArena.Gameplay.Arena;
+using MicroArena.Gameplay.Bosses;
 using MicroArena.Gameplay.Cards;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
@@ -68,8 +69,15 @@ namespace MicroArena.Gameplay.Editor
             Material crawlerMat = GetOrCreateMaterial("Crawler", new Color(0.45f, 0.75f, 0.2f), lit);
             Material casterMat = GetOrCreateMaterial("VoidCaster", new Color(0.6f, 0.2f, 0.9f), lit);
             Material huskMat = GetOrCreateMaterial("VolatileHusk", new Color(1f, 0.55f, 0.1f), lit);
-            Material miniBossMat = GetOrCreateMaterial("MiniBossStandIn", new Color(0.55f, 0.35f, 0.15f), lit);
-            Material finalBossMat = GetOrCreateMaterial("FinalBossStandIn", new Color(0.2f, 0.05f, 0.35f), lit);
+            Material gargoyleMat = GetOrCreateMaterial("GargoyleTyrant", new Color(0.55f, 0.5f, 0.45f), lit);
+            Material wardenMat = GetOrCreateMaterial("VoidWarden", new Color(0.12f, 0.02f, 0.3f), lit);
+            Material telegraphMat = GetOrCreateMaterial("BossTelegraph", new Color(1f, 0.1f, 0.1f, 0.5f), lit);
+            MakeTransparent(telegraphMat);
+            if (telegraphMat.GetFloat("_Cull") != 0f)
+            {
+                telegraphMat.SetFloat("_Cull", 0f); // two-sided: the sector mesh is seen from above whatever its winding
+                EditorUtility.SetDirty(telegraphMat);
+            }
             Material projectileMat = GetOrCreateMaterial("Projectile", new Color(0.85f, 0.45f, 1f), lit);
 
             PlayerConfig playerConfig = GetOrCreateAsset($"{DataFolder}/PlayerConfig.asset", () => ScriptableObject.CreateInstance<PlayerConfig>());
@@ -77,9 +85,7 @@ namespace MicroArena.Gameplay.Editor
             EnemyConfig crawlerConfig = GetOrCreateAsset($"{DataFolder}/EnemyConfig_Crawler.asset", () => EnemyConfig.CreateDefault(EnemyKind.Crawler));
             EnemyConfig casterConfig = GetOrCreateAsset($"{DataFolder}/EnemyConfig_VoidCaster.asset", () => EnemyConfig.CreateDefault(EnemyKind.VoidCaster));
             EnemyConfig huskConfig = GetOrCreateAsset($"{DataFolder}/EnemyConfig_VolatileHusk.asset", () => EnemyConfig.CreateDefault(EnemyKind.VolatileHusk));
-            // [PLACEHOLDER] Boss stand-ins until story 006: tougher Crawlers (HP, damage, speed, bite reach for the bigger body).
-            EnemyConfig miniBossConfig = GetOrCreateAsset($"{DataFolder}/EnemyConfig_MiniBossStandIn.asset", () => CreateBossStandIn(600f, 20f, 3f, 2.2f));
-            EnemyConfig finalBossConfig = GetOrCreateAsset($"{DataFolder}/EnemyConfig_FinalBossStandIn.asset", () => CreateBossStandIn(1200f, 25f, 3f, 2.6f));
+            BossConfig bossConfig = GetOrCreateAsset($"{DataFolder}/BossConfig.asset", () => ScriptableObject.CreateInstance<BossConfig>());
 
             Projectile projectilePrefab = GetOrCreatePrefab<Projectile>($"{PrefabsFolder}/Projectile.prefab", () => BuildProjectile(projectileMat));
             Crawler crawlerPrefab = GetOrCreatePrefab<Crawler>($"{PrefabsFolder}/Crawler.prefab",
@@ -94,10 +100,10 @@ namespace MicroArena.Gameplay.Editor
             });
             VolatileHusk huskPrefab = GetOrCreatePrefab<VolatileHusk>($"{PrefabsFolder}/VolatileHusk.prefab",
                 () => BuildEnemy<VolatileHusk>("VolatileHusk", PrimitiveType.Sphere, Vector3.one * 0.8f, huskMat, huskConfig, queryConfig));
-            Crawler miniBossPrefab = GetOrCreatePrefab<Crawler>($"{PrefabsFolder}/MiniBossStandIn.prefab",
-                () => BuildEnemy<Crawler>("MiniBossStandIn", PrimitiveType.Cube, new Vector3(1.8f, 1.2f, 1.8f), miniBossMat, miniBossConfig, queryConfig));
-            Crawler finalBossPrefab = GetOrCreatePrefab<Crawler>($"{PrefabsFolder}/FinalBossStandIn.prefab",
-                () => BuildEnemy<Crawler>("FinalBossStandIn", PrimitiveType.Cube, new Vector3(2.4f, 1.6f, 2.4f), finalBossMat, finalBossConfig, queryConfig));
+            GargoyleTyrant gargoylePrefab = GetOrCreatePrefab<GargoyleTyrant>($"{PrefabsFolder}/GargoyleTyrant.prefab",
+                () => BuildBoss<GargoyleTyrant>("GargoyleTyrant", PrimitiveType.Cube, new Vector3(2.4f, 2f, 2.4f), gargoyleMat, bossConfig, telegraphMat, queryConfig));
+            VoidWarden wardenPrefab = GetOrCreatePrefab<VoidWarden>($"{PrefabsFolder}/VoidWarden.prefab",
+                () => BuildBoss<VoidWarden>("VoidWarden", PrimitiveType.Capsule, new Vector3(1.6f, 1.8f, 1.6f), wardenMat, bossConfig, telegraphMat, queryConfig));
 
             var actions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(InputActionsPath);
             if (actions == null)
@@ -114,7 +120,8 @@ namespace MicroArena.Gameplay.Editor
                 Husk = huskPrefab, HuskConfig = huskConfig,
             };
             WaveConfig waveConfig = GetOrCreateAsset($"{DataFolder}/WaveConfig.asset",
-                () => CreateWaveConfig(pools, miniBossPrefab, miniBossConfig, finalBossPrefab, finalBossConfig));
+                () => CreateWaveConfig(pools));
+            WireBosses(waveConfig, gargoylePrefab, wardenPrefab, bossConfig); // also fixes an asset made before story 006
             RotatingTrap trapPrefab = GetOrCreatePrefab<RotatingTrap>($"{PrefabsFolder}/RotatingTrap.prefab", () => BuildTrap(trapMat, waveConfig));
 
             // Story 004: the 9 cards (kich_ban_chuan.md section 6; descriptions are the script wording). Created only when missing.
@@ -256,18 +263,6 @@ namespace MicroArena.Gameplay.Editor
             return prefab.GetComponent<T>();
         }
 
-        private static EnemyConfig CreateBossStandIn(float maxHealth, float damage, float moveSpeed, float biteRange)
-        {
-            EnemyConfig config = EnemyConfig.CreateDefault(EnemyKind.Crawler);
-            var so = new SerializedObject(config);
-            so.FindProperty("_maxHealth").floatValue = maxHealth;
-            so.FindProperty("_damage").floatValue = damage;
-            so.FindProperty("_moveSpeed").floatValue = moveSpeed;
-            so.FindProperty("_biteRange").floatValue = biteRange;
-            so.ApplyModifiedPropertiesWithoutUndo();
-            return config;
-        }
-
         private static CardConfig GetOrCreateCard(string fileName, List<CardConfig> created, Func<CardConfig> create)
         {
             string path = $"{DataFolder}/{fileName}.asset";
@@ -359,13 +354,30 @@ namespace MicroArena.Gameplay.Editor
         private static GameObject BuildEnemy<T>(string name, PrimitiveType shape, Vector3 scale, Material material,
             EnemyConfig config, CombatQueryConfig queryConfig) where T : EnemyBase
         {
+            GameObject go = BuildBody(name, shape, scale, material);
+            go.AddComponent<T>().Configure(config, null, queryConfig); // Kaelen is injected by WaveDirector at spawn
+            return go;
+        }
+
+        // Story 006: same body rules as the enemies; stats come from the shared BossConfig, the floor telegraphs from their material.
+        private static GameObject BuildBoss<T>(string name, PrimitiveType shape, Vector3 scale, Material material,
+            BossConfig bossConfig, Material telegraphMaterial, CombatQueryConfig queryConfig) where T : BossBase
+        {
+            GameObject go = BuildBody(name, shape, scale, material);
+            var boss = go.AddComponent<T>();
+            boss.ConfigureBoss(bossConfig, null, queryConfig); // Kaelen is injected by WaveDirector at spawn
+            boss.SetTelegraphMaterial(telegraphMaterial);
+            return go;
+        }
+
+        private static GameObject BuildBody(string name, PrimitiveType shape, Vector3 scale, Material material)
+        {
             GameObject go = GameObject.CreatePrimitive(shape);
             go.name = name;
             float restHeight = shape == PrimitiveType.Capsule ? scale.y : scale.y * 0.5f; // capsule is 2 units tall
             go.transform.position = new Vector3(0f, restHeight, 0f);
             go.transform.localScale = scale;
             go.GetComponent<Renderer>().sharedMaterial = material;
-            go.AddComponent<T>().Configure(config, null, queryConfig); // Kaelen is injected by WaveDirector at spawn
             return go;
         }
 
@@ -416,8 +428,8 @@ namespace MicroArena.Gameplay.Editor
         }
 
         // Bang 1. [PLACEHOLDER] pool weights (mix ratios are not specified).
-        private static WaveConfig CreateWaveConfig(PoolPrefabs p, EnemyBase miniBoss, EnemyConfig miniBossConfig,
-            EnemyBase finalBoss, EnemyConfig finalBossConfig)
+        // The boss waves (5 and 10) get their prefab and config in WireBosses.
+        private static WaveConfig CreateWaveConfig(PoolPrefabs p)
         {
             var config = ScriptableObject.CreateInstance<WaveConfig>();
             var so = new SerializedObject(config);
@@ -434,19 +446,19 @@ namespace MicroArena.Gameplay.Editor
             SetWave(waves.GetArrayElementAtIndex(1), WaveGoal.Kill, 15, 0f, crawlerOnly, null, null, 0);
             SetWave(waves.GetArrayElementAtIndex(2), WaveGoal.Kill, 25, 0f, crawlerCaster, null, null, 0);
             SetWave(waves.GetArrayElementAtIndex(3), WaveGoal.Kill, 25, 0f, crawlerCaster, null, null, 0);
-            SetWave(waves.GetArrayElementAtIndex(4), WaveGoal.Boss, 1, 0f, crawlerOnly, miniBoss, miniBossConfig, 4);
+            SetWave(waves.GetArrayElementAtIndex(4), WaveGoal.Boss, 1, 0f, crawlerOnly, null, null, 4);
             SetWave(waves.GetArrayElementAtIndex(5), WaveGoal.SurviveOrKill, 40, 60f, crawlerHusk, null, null, 0);
             SetWave(waves.GetArrayElementAtIndex(6), WaveGoal.SurviveOrKill, 40, 60f, crawlerHusk, null, null, 0);
             SetWave(waves.GetArrayElementAtIndex(7), WaveGoal.Kill, 50, 0f, everyKind, null, null, 0);
             SetWave(waves.GetArrayElementAtIndex(8), WaveGoal.Kill, 50, 0f, everyKind, null, null, 0);
-            SetWave(waves.GetArrayElementAtIndex(9), WaveGoal.Boss, 1, 0f, none, finalBoss, finalBossConfig, 0);
+            SetWave(waves.GetArrayElementAtIndex(9), WaveGoal.Boss, 1, 0f, none, null, null, 0);
 
             so.ApplyModifiedPropertiesWithoutUndo();
             return config;
         }
 
         private static void SetWave(SerializedProperty wave, WaveGoal goal, int killTarget, float surviveSeconds,
-            IReadOnlyList<(EnemyBase prefab, EnemyConfig config, int weight)> pool, EnemyBase bossPrefab, EnemyConfig bossConfig,
+            IReadOnlyList<(EnemyBase prefab, EnemyConfig config, int weight)> pool, BossBase bossPrefab, BossConfig bossConfig,
             int escortCount)
         {
             wave.FindPropertyRelative("_goal").enumValueIndex = (int)goal;
@@ -464,6 +476,25 @@ namespace MicroArena.Gameplay.Editor
                 entry.FindPropertyRelative("_config").objectReferenceValue = pool[i].config;
                 entry.FindPropertyRelative("_weight").intValue = pool[i].weight;
             }
+        }
+
+        // Wave 5 = Gargoyle Tyrant (with its 4 Crawler escorts), Wave 10 = Void Warden. Only writes when a value differs.
+        private static void WireBosses(WaveConfig config, BossBase gargoyle, BossBase warden, BossConfig bossConfig)
+        {
+            var so = new SerializedObject(config);
+            SerializedProperty waves = so.FindProperty("_waves");
+            SetBoss(waves.GetArrayElementAtIndex(4), gargoyle, bossConfig);
+            SetBoss(waves.GetArrayElementAtIndex(9), warden, bossConfig);
+            if (so.ApplyModifiedPropertiesWithoutUndo())
+            {
+                EditorUtility.SetDirty(config);
+            }
+        }
+
+        private static void SetBoss(SerializedProperty wave, BossBase prefab, BossConfig bossConfig)
+        {
+            wave.FindPropertyRelative("_bossPrefab").objectReferenceValue = prefab;
+            wave.FindPropertyRelative("_bossConfig").objectReferenceValue = bossConfig;
         }
 
         private static void BuildSceneContents(WaveConfig config, Material floorMat, Material wallMat, PlayerController kaelenPrefab,

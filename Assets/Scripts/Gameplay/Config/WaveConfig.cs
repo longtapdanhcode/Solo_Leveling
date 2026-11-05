@@ -6,6 +6,7 @@
 // holds the Bang 1 values; the field defaults below are only the fallback for a fresh asset.
 
 using System;
+using MicroArena.Gameplay.Bosses;
 using MicroArena.Gameplay.Enemies;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace MicroArena.Gameplay.Config
         Kill,
         /// <summary>Survive <c>SurviveSeconds</c> or kill <c>KillTarget</c>, whichever comes first. Spawns never stop.</summary>
         SurviveOrKill,
-        /// <summary>Kill the boss. <c>EscortCount</c> extra enemies are spawned from the pool.</summary>
+        /// <summary>Kill the boss, and no escort (<c>EscortCount</c> extra enemies spawned from the pool) may remain alive.</summary>
         Boss,
     }
 
@@ -52,10 +53,10 @@ namespace MicroArena.Gameplay.Config
         [SerializeField, Min(0f)] private float _surviveSeconds = 60f;
         [Tooltip("Enemies spawned over time during the wave.")]
         [SerializeField] private WaveSpawnEntry[] _spawnPool = Array.Empty<WaveSpawnEntry>();
-        [Tooltip("Boss prefab spawned at wave start (Boss only). Stand-in until story 006.")]
-        [SerializeField] private EnemyBase _bossPrefab;
-        [Tooltip("Config injected into the boss (Boss only).")]
-        [SerializeField] private EnemyConfig _bossConfig;
+        [Tooltip("Boss prefab spawned at wave start (Boss only): Gargoyle Tyrant or Void Warden.")]
+        [SerializeField] private BossBase _bossPrefab;
+        [Tooltip("Boss tuning injected into the boss (Boss only).")]
+        [SerializeField] private BossConfig _bossConfig;
         // [PLACEHOLDER] Kind of the 4 Wave 5 support enemies is not specified (Crawlers for now).
         [Tooltip("Extra enemies spawned from the pool during a Boss wave.")]
         [SerializeField, Min(0)] private int _escortCount;
@@ -69,9 +70,9 @@ namespace MicroArena.Gameplay.Config
         /// <summary>Weighted pool for spawns over time.</summary>
         public WaveSpawnEntry[] SpawnPool => _spawnPool;
         /// <summary>Boss prefab (Boss).</summary>
-        public EnemyBase BossPrefab => _bossPrefab;
+        public BossBase BossPrefab => _bossPrefab;
         /// <summary>Boss config (Boss).</summary>
-        public EnemyConfig BossConfig => _bossConfig;
+        public BossConfig BossConfig => _bossConfig;
         /// <summary>Pool spawns of a Boss wave.</summary>
         public int EscortCount => _escortCount;
 

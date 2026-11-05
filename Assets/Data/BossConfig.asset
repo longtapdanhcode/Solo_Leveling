@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45f9bcafef2f47139b74a01f417e164, type: 3}
+  m_Name: BossConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.BossConfig
+  _minTelegraphSeconds: 1
+  _attackCooldown: 3
+  _stopDistance: 1.5
+  _telegraphHeight: 0.03
+  _telegraphStartAlpha: 0.25
+  _telegraphEndAlpha: 0.7
+  _telegraphSegments: 48
+  _gargoyleMaxHealth: 600
+  _gargoyleMoveSpeed: 3
+  _slamDamage: 25
+  _slamRadius: 4
+  _slamTelegraphSeconds: 1
+  _slamTriggerRange: 3.5
+  _wardenMaxHealth: 2000
+  _wardenMoveSpeed: 3.5
+  _phaseTwoThreshold: 0.5
+  _slashDamage: 30
+  _slashCount: 3
+  _slashTelegraphSeconds: 1
+  _slashRange: 8
+  _slashAngleDegrees: 90
+  _slashGapSeconds: 0.4
+  _pullRadius: 14
+  _pullWindupSeconds: 1.2
+  _pullSpeed: 3
+  _pullDurationSeconds: 2
+  _burstDamage: 40
+  _burstRadius: 4
+  _burstTelegraphSeconds: 1
+  _meteorDamage: 20
+  _meteorCount: 5
+  _meteorIntervalSeconds: 8
+  _meteorRadius: 2
+  _meteorTelegraphSeconds: 1.5
+  _meteorAreaHalfExtent: 16

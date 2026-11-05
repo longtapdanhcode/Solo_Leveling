@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8547319810207677400
+--- !u!1 &5124408138606002654
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,49 +8,49 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7466557074973804538}
-  - component: {fileID: 2564575685217699054}
-  - component: {fileID: 7952449938138041523}
-  - component: {fileID: 2475106907271482895}
-  - component: {fileID: 6729591518256889567}
-  - component: {fileID: 5862522109862123742}
+  - component: {fileID: 6969575174605382490}
+  - component: {fileID: 5655030223558982054}
+  - component: {fileID: 8283889735019266597}
+  - component: {fileID: 7860261761067016160}
+  - component: {fileID: 6702549576606767611}
+  - component: {fileID: 5536741289588568571}
   m_Layer: 0
-  m_Name: MiniBossStandIn
+  m_Name: GargoyleTyrant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7466557074973804538
+--- !u!4 &6969575174605382490
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8547319810207677400}
+  m_GameObject: {fileID: 5124408138606002654}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0}
-  m_LocalScale: {x: 1.8, y: 1.2, z: 1.8}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 2.4, y: 2, z: 2.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2564575685217699054
+--- !u!33 &5655030223558982054
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8547319810207677400}
+  m_GameObject: {fileID: 5124408138606002654}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &7952449938138041523
+--- !u!65 &8283889735019266597
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8547319810207677400}
+  m_GameObject: {fileID: 5124408138606002654}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -65,13 +65,13 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &2475106907271482895
+--- !u!23 &7860261761067016160
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8547319810207677400}
+  m_GameObject: {fileID: 5124408138606002654}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -90,7 +90,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a88a94a3d864f4186a9b599eeee59bf0, type: 2}
+  - {fileID: 2100000, guid: f5c69f16a39f54f1e8d68a7a1a50fd2d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114,13 +114,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!54 &6729591518256889567
+--- !u!54 &6702549576606767611
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8547319810207677400}
+  m_GameObject: {fileID: 5124408138606002654}
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
@@ -141,19 +141,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5862522109862123742
+--- !u!114 &5536741289588568571
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8547319810207677400}
+  m_GameObject: {fileID: 5124408138606002654}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f22fdb65950a4eb5b41ad54f2f14f15, type: 3}
+  m_Script: {fileID: 11500000, guid: ff9559d186fce43a4a4146c0dad2bdc3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Enemies.Crawler
-  _config: {fileID: 11400000, guid: b16f7aa43485e4b0ab7e6648b3608d57, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Bosses.GargoyleTyrant
+  _config: {fileID: 0}
   _target: {fileID: 0}
   _queryConfig: {fileID: 11400000, guid: 675fcecd08fe14605a284cf66b4eb69d, type: 2}
   _knockbackSlideSeconds: 0.15
+  _bossConfig: {fileID: 11400000, guid: 638fd9daea2344a6f83447c1d41c6098, type: 2}
+  _telegraphMaterial: {fileID: 2100000, guid: c7d849427060044fcade1d0c0b3bc31f, type: 2}

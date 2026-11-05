@@ -66,8 +66,8 @@ MonoBehaviour:
     - _prefab: {fileID: 2297598342479611679, guid: e7334dcd386134ee4b5fed18f84c5574, type: 3}
       _config: {fileID: 11400000, guid: 7ef3f86795d9444a8aa97cbba09333f1, type: 2}
       _weight: 1
-    _bossPrefab: {fileID: 5862522109862123742, guid: d2358b58106f44976aa3c3c09732afbf, type: 3}
-    _bossConfig: {fileID: 11400000, guid: b16f7aa43485e4b0ab7e6648b3608d57, type: 2}
+    _bossPrefab: {fileID: 5536741289588568571, guid: 0e97c4d3d084642cb93fb37a0c4d2256, type: 3}
+    _bossConfig: {fileID: 11400000, guid: 638fd9daea2344a6f83447c1d41c6098, type: 2}
     _escortCount: 4
   - _goal: 1
     _killTarget: 40
@@ -131,8 +131,8 @@ MonoBehaviour:
     _killTarget: 1
     _surviveSeconds: 0
     _spawnPool: []
-    _bossPrefab: {fileID: 5331236683373385064, guid: cd53224d910ea49578be6a38d21a22f9, type: 3}
-    _bossConfig: {fileID: 11400000, guid: 7efde2aa227cf42c7b9093881f3e17b3, type: 2}
+    _bossPrefab: {fileID: 8653060868863689329, guid: 64a494709660646aeb358c61fbf8c5cd, type: 3}
+    _bossConfig: {fileID: 11400000, guid: 638fd9daea2344a6f83447c1d41c6098, type: 2}
     _escortCount: 0
   _spawnInterval: 0.8
   _maxAlive: 12
