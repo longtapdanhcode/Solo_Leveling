@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // Run-and-observe capture: Game.exe --scene Shop --screenshot C:/abs/shop.png --after 60
+// Editor and development builds only: a release player compiles none of this, so it ignores --screenshot.
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 public class ScreenshotOnArg : MonoBehaviour
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -34,3 +36,4 @@ public class ScreenshotOnArg : MonoBehaviour
         Application.Quit();
     }
 }
+#endif

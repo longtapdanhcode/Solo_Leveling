@@ -171,7 +171,7 @@ PlayerSettings:
   androidMinAspectRatio: 1
   applicationIdentifier:
     Android: com.UnityTechnologies.Universal3D
-    Standalone: com.Unity-Technologies.com.unity.template.urp-blank
+    Standalone: com.long.MicroArenaSurvivor
     iPhone: com.Unity-Technologies.Universal-3D
     tvOS: com.Unity-Technologies.Universal-3D
   buildNumber:
