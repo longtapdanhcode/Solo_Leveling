@@ -15,13 +15,14 @@ namespace MicroArena.Gameplay.Bosses
 {
     /// <summary>
     /// Scene adapter shared by both bosses: stats from <see cref="BossConfig"/>, immunity to stun and knockback, a per-frame
-    /// bridge to the plain-C# <see cref="BossBrain"/> (chase, telegraphs, pull) and the red floor drawings. Time comes from
+    /// bridge to the plain-C# <see cref="BossBrain"/> (chase, telegraphs, pull) and the floor drawings (red = damage,
+    /// purple = warning only; story 007). Time comes from
     /// <c>Time.deltaTime</c> through <see cref="EnemyBase"/>, which is 0 during a pause or hit-stop, so telegraphs freeze with the game.
     /// </summary>
     public abstract class BossBase : EnemyBase
     {
         [SerializeField] private BossConfig _bossConfig;
-        [Tooltip("Translucent red material of the floor telegraphs.")]
+        [Tooltip("Translucent material of the floor telegraphs. Its colour is replaced by BossConfig's telegraph colours.")]
         [SerializeField] private Material _telegraphMaterial;
 
         private readonly List<TelegraphView> _views = new List<TelegraphView>();
@@ -30,6 +31,8 @@ namespace MicroArena.Gameplay.Bosses
 
         /// <summary>The boss tuning asset.</summary>
         public BossConfig Settings => _bossConfig;
+        /// <summary>Name shown on the HUD boss bar (story 007), from <see cref="BossConfig"/>.</summary>
+        public abstract string DisplayName { get; }
         /// <summary>The attack logic (telegraphs, cooldown, phase).</summary>
         public BossBrain Brain => _brain;
         /// <inheritdoc />

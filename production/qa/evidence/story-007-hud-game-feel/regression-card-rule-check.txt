@@ -1,0 +1,66 @@
+# CardRuleCheck (regression after story 007) — Unity 6000.6.3f1 batchmode, 2026-11-05 18:08, exit 0
+PASS Vong Xoay: SwingRadius(3) == 3.9 (got 3.9)
+PASS Vong Xoay: DetectionRange(3) == 3 (got 3)
+PASS commons: Suc Manh Tho x2 -> damage x1.30 (got 1.3)
+PASS commons: Giay Bao -> move x1.12 (got 1.12)
+PASS commons: Huyet Nhu -> max HP +20 (got 20)
+PASS commons: StackCount(d) == 2
+PASS repeat: Hoa Nguc x2 -> 20 DMG/s per stack (got 20)
+PASS repeat: Loi Chan x2 -> 50 chain DMG (got 50)
+PASS repeat: Phan Than x2 -> 3 s decoy (got 3)
+PASS repeat: Vong Xoay x2 -> SwingRadius(3) = 4.8 (got 4.8)
+PASS repeat: Vong Xoay x2 -> detection still 3 (got 3)
+PASS repeat: Vong Xoay x2 -> 8% heal per kill (KillHeal(120) = 9.6) (got 9.6)
+PASS repeat: Sao Bang x2 -> 160 meteor DMG (got 160)
+PASS repeat: Cuong No x2 below 30% -> damage x3 (got 3)
+PASS repeat: Cuong No x2 below 30% -> crit 0.05 + 1.0 clamps to 1 (got 1)
+PASS repeat: StackCount(sao_bang) == 2
+PASS rage: not owned, HP 10% -> damage x1 (got 1)
+PASS rage: not owned, HP 10% -> crit 0.05 (got 0.05)
+PASS rage: HP 50% -> damage x1 (got 1)
+PASS rage: HP exactly 30% -> damage x1 (strictly below) (got 1)
+PASS rage: HP 29% -> damage x2 (got 2)
+PASS rage: HP 50% -> crit 0.05 (got 0.05)
+PASS rage: HP 29% -> crit 0.05 + 0.50 = 0.55 (got 0.55)
+PASS rage: additive with Suc Manh Tho below 30% -> x2.15 (got 2.15)
+PASS rage: Suc Manh Tho alone above 30% -> x1.15 (got 1.15)
+PASS crit: no bonus -> 0.05 (got 0.05)
+PASS crit: 0.05 + 0.50 -> 0.55 (got 0.55)
+PASS crit: 0.05 + 1.00 clamps to 1 (got 1)
+PASS burn: 1 stack, 1 s at 10 DMG/s -> 10 (got 10)
+PASS burn: 2nd hit -> 2 stacks
+PASS burn: 2nd hit refreshes timer to 3 s (got 3)
+PASS burn: 4 hits capped at 3 stacks
+PASS burn: 3 stacks, 0.5 s -> 15 (max 30 DMG/s) (got 15)
+PASS burn: remaining 2.5 s, tick 5 s only burns 2.5 s -> 75 (got 75)
+PASS burn: expired -> inactive, 0 stacks
+PASS burn: expired tick -> 0 (got 0)
+PASS chain: picks the 3 nearest others in order (1 m, 2 m, 3 m)
+PASS chain: excludes the source
+PASS chain: excludes dead and out-of-range (5 m) enemies
+PASS chain: fewer in range -> only those (1)
+PASS pool: only commons -> all 3 offered (200 draws)
+PASS pool: 9 cards -> 3 distinct (300 draws)
+PASS pool: roll 0.65 picks a Rare first
+PASS pool: roll 0.95 picks a Legendary first
+PASS pool: card at MaxStacks is excluded (2 offered)
+PASS force: parse 'vong_xoay, cuong_no,,sao_bang' -> 3 trimmed ids
+PASS force: argument absent -> none
+PASS force: argument last (no value) -> none
+PASS force: next token is an option -> none
+PASS force: unknown id skipped with one warning
+PASS force: duplicates dropped, order kept (sao_bang, loi_chan)
+PASS force: 2 forced shown first, 1 normal fill, all distinct
+PASS force: more than CardsPerPick -> first 3
+PASS force: 3 forced -> exactly those 3
+PASS force: capped forced card is skipped
+PASS pause: Reset -> timeScale 1 (got 1)
+PASS pause: hit-stop ends while paused -> timeScale stays 0 (got 0)
+PASS pause: Release -> timeScale 1 (got 1)
+PASS pause: Acquire twice + Release once -> timeScale 1 (idempotent) (got 1)
+PASS pause: Release of unknown owner -> timeScale 1 (got 1)
+PASS reset: every multiplier back to 1
+PASS reset: every card number back to 0
+PASS reset: crit at HP 10% back to 0.05 (got 0.05)
+PASS reset: stack counts cleared
+CardRuleCheck: ALL PASS

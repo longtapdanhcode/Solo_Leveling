@@ -6,6 +6,9 @@ namespace MicroArena.Gameplay.Bosses
     public sealed class GargoyleTyrant : BossBase
     {
         /// <inheritdoc />
+        public override string DisplayName => Settings.GargoyleDisplayName;
+
+        /// <inheritdoc />
         protected override float StartingHealth => Settings.GargoyleMaxHealth;
 
         /// <inheritdoc />

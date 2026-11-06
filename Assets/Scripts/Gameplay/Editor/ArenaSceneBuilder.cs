@@ -1,5 +1,6 @@
 // Implements: production/epics/micro-arena-survivor/story-003-arena-waves.md (Arena scene), design/game-brief.md MVP 2,
-// design/narrative/kich_ban_chuan.md section 4 (Bang 1 wave values).
+// design/narrative/kich_ban_chuan.md section 4 (Bang 1 wave values). Story 007: FeelConfig asset, the Be Vietnam Pro
+// TextMeshPro font assets, the HUD, the end screens and the camera shake.
 //
 // Editor only (this folder compiles into Assembly-CSharp-Editor). Generates the URP materials, prefabs, config assets,
 // Assets/Scenes/Arena.unity and the Scene List entry. Batchmode:
@@ -9,20 +10,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using MicroArena.Gameplay.Arena;
 using MicroArena.Gameplay.Bosses;
 using MicroArena.Gameplay.Cards;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
 using MicroArena.Gameplay.Enemies;
+using MicroArena.Gameplay.Feel;
 using MicroArena.Gameplay.Player;
 using MicroArena.Gameplay.Waves;
 using MicroArena.UI;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.TextCore.LowLevel;
 using Object = UnityEngine.Object;
 
 namespace MicroArena.Gameplay.Editor
@@ -39,6 +44,15 @@ namespace MicroArena.Gameplay.Editor
         private const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
         private const string LitShaderPath = "Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader";
         private const string LitShaderName = "Universal Render Pipeline/Lit";
+        private const string TmpSettingsPath = "Assets/TextMesh Pro/Resources/TMP Settings.asset";
+        private const string FontFolder = "Assets/Fonts/BeVietnamPro";
+        private const string RegularFontFile = "BeVietnamPro-Regular";
+        private const string BoldFontFile = "BeVietnamPro-Bold";
+
+        // TMP SDF atlas settings of the UI fonts: 1024 px pages (more pages are added when full), 48 pt sampling, 6 px padding.
+        private const int FontSamplingSize = 48;
+        private const int FontAtlasPadding = 6;
+        private const int FontAtlasSize = 1024;
 
         // Visual only: floor slab thickness and bolt size (same as VoidCaster's runtime-built bolt).
         private const float FloorThickness = 0.2f;
@@ -172,7 +186,21 @@ namespace MicroArena.Gameplay.Editor
                 return effects;
             });
 
-            BuildSceneContents(waveConfig, floorMat, wallMat, kaelenPrefab, trapPrefab, queryConfig, cardPool, cardEffects, soulBurstConfig, ringMat, actions);
+            // Story 007: feel tuning and the UI fonts (TMP Essential Resources must be imported: they hold the TMP shaders).
+            FeelConfig feelConfig = GetOrCreateAsset($"{DataFolder}/FeelConfig.asset", () => ScriptableObject.CreateInstance<FeelConfig>());
+            if (AssetDatabase.LoadAssetAtPath<TMP_Settings>(TmpSettingsPath) == null)
+            {
+                throw new InvalidOperationException(
+                    $"ArenaSceneBuilder: {TmpSettingsPath} missing. Import TMP Essential Resources (Window > TextMeshPro) first.");
+            }
+            var ui = new UiAssets
+            {
+                Feel = feelConfig,
+                Font = GetOrCreateFontAsset(RegularFontFile),
+                BoldFont = GetOrCreateFontAsset(BoldFontFile),
+            };
+
+            BuildSceneContents(waveConfig, floorMat, wallMat, kaelenPrefab, trapPrefab, queryConfig, cardPool, cardEffects, soulBurstConfig, ringMat, actions, ui);
 
             if (!EditorSceneManager.SaveScene(scene, ScenePath))
             {
@@ -181,6 +209,76 @@ namespace MicroArena.Gameplay.Editor
             UpdateSceneList();
             AssetDatabase.SaveAssets();
             Debug.Log($"ArenaSceneBuilder: built {ScenePath} (shader '{lit.name}'), Scene List: {string.Join(", ", Array.ConvertAll(EditorBuildSettings.scenes, s => s.path))}");
+        }
+
+        private struct UiAssets
+        {
+            public FeelConfig Feel;
+            public TMP_FontAsset Font;
+            public TMP_FontAsset BoldFont;
+        }
+
+        /// <summary>
+        /// Every character the UI fonts are pre-filled with: printable ASCII, all Vietnamese letters (Latin-1 accented vowels,
+        /// Ă Đ Ĩ Ũ Ơ Ư and the whole U+1EA0-U+1EF9 block with every tone mark) and the punctuation the UI uses.
+        /// </summary>
+        public static string FontCharacters()
+        {
+            var text = new StringBuilder();
+            for (char c = ' '; c <= '~'; c++)
+            {
+                text.Append(c);
+            }
+            text.Append("ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯư");
+            for (char c = '\u1EA0'; c <= '\u1EF9'; c++)
+            {
+                text.Append(c);
+            }
+            text.Append("—–…•×·“”‘’«»%°");
+            return text.ToString();
+        }
+
+        // Dynamic SDF font asset with its atlas and material saved inside it. Pre-filled with FontCharacters() so the file
+        // holds every UI glyph; the source font stays referenced (Dynamic), so a glyph missing from the set is still added
+        // at runtime. ClearDynamicDataOnBuild is off: TMP would otherwise empty the tables on every editor quit and player
+        // build, rewriting the asset each time. Characters are only ever added, and only when missing.
+        private static TMP_FontAsset GetOrCreateFontAsset(string fontFile)
+        {
+            string path = $"{FontFolder}/{fontFile} SDF.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            if (asset == null)
+            {
+                var font = AssetDatabase.LoadAssetAtPath<Font>($"{FontFolder}/{fontFile}.ttf");
+                if (font == null)
+                {
+                    throw new InvalidOperationException($"ArenaSceneBuilder: font not found at {FontFolder}/{fontFile}.ttf.");
+                }
+                asset = TMP_FontAsset.CreateFontAsset(font, FontSamplingSize, FontAtlasPadding, GlyphRenderMode.SDFAA,
+                    FontAtlasSize, FontAtlasSize, AtlasPopulationMode.Dynamic, true);
+                if (asset == null)
+                {
+                    throw new InvalidOperationException($"ArenaSceneBuilder: TMP could not load the font face of {fontFile}.ttf.");
+                }
+                asset.name = $"{fontFile} SDF";
+                AssetDatabase.CreateAsset(asset, path);
+                asset.atlasTextures[0].name = $"{fontFile} SDF Atlas";
+                AssetDatabase.AddObjectToAsset(asset.atlasTextures[0], asset);
+                asset.material.name = $"{fontFile} SDF Material";
+                AssetDatabase.AddObjectToAsset(asset.material, asset);
+                var so = new SerializedObject(asset);
+                so.FindProperty("m_ClearDynamicDataOnBuild").boolValue = false;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            int before = asset.characterTable.Count;
+            if (!asset.TryAddCharacters(FontCharacters(), out string missing))
+            {
+                Debug.LogWarning($"ArenaSceneBuilder: {fontFile} has no glyph for '{missing}'.");
+            }
+            if (asset.characterTable.Count != before)
+            {
+                EditorUtility.SetDirty(asset);
+            }
+            return asset;
         }
 
         private struct PoolPrefabs
@@ -499,7 +597,7 @@ namespace MicroArena.Gameplay.Editor
 
         private static void BuildSceneContents(WaveConfig config, Material floorMat, Material wallMat, PlayerController kaelenPrefab,
             RotatingTrap trapPrefab, CombatQueryConfig queryConfig, CardPoolConfig cardPool, CardEffectConfig cardEffects,
-            SoulBurstConfig soulBurstConfig, Material ringMat, InputActionAsset actions)
+            SoulBurstConfig soulBurstConfig, Material ringMat, InputActionAsset actions, UiAssets ui)
         {
             var lightObject = new GameObject("Directional Light");
             var light = lightObject.AddComponent<Light>();
@@ -542,10 +640,11 @@ namespace MicroArena.Gameplay.Editor
             // Story 005: Soul Burst lives on Kaelen's scene instance (it needs the scene's director and run state).
             var soulBurst = kaelenObject.AddComponent<SoulBurst>();
             soulBurst.Configure(soulBurstConfig, actions, health, controller, runState, director, ~0, queryConfig, ringMat);
-            directorObject.AddComponent<WaveDebugOverlay>().Configure(director, health, soulBurst);
+            directorObject.AddComponent<WaveDebugOverlay>().Configure(director, health, soulBurst); // debug builds only
 
             var cardObject = new GameObject("CardController");
             var screen = cardObject.AddComponent<CardPickScreen>();
+            screen.Configure(ui.Font, ui.BoldFont);
             var attack = kaelenObject.GetComponent<AutoAttack>();
             var runner = cardObject.AddComponent<CardEffectRunner>();
             runner.Configure(cardEffects, director, attack, kaelenObject.GetComponent<Dash>(), health, ~0, queryConfig);
@@ -558,25 +657,32 @@ namespace MicroArena.Gameplay.Editor
             follow.Configure(kaelenObject.transform);
             cameraObject.transform.position = kaelenObject.transform.position + new Vector3(0f, 14f, -5f); // matches FollowCamera default offset
             cameraObject.transform.LookAt(kaelenObject.transform.position);
+            cameraObject.AddComponent<ScreenShake>().Configure(ui.Feel, follow, attack, director);
+
+            // Story 007: HUD and end screens (runtime-built UGUI, TextMeshPro with Be Vietnam Pro).
+            var uiObject = new GameObject("UI");
+            uiObject.AddComponent<HudController>().Configure(ui.Feel, director, health, kaelenObject.GetComponent<Dash>(), soulBurst,
+                ui.Font, ui.BoldFont);
+            uiObject.AddComponent<EndScreens>().Configure(ui.Feel, runState, director, ui.Font, ui.BoldFont);
         }
 
-        // URP Lit alpha blending, written once when the material is created (the other materials are opaque).
+        // URP Lit alpha blending (the other materials are opaque). Story 007: the blend factors, keywords and passes are
+        // derived by URP's own BaseShaderGUI.SetupMaterialBlendMode, the same routine LitShader.ValidateMaterial runs
+        // whenever the editor loads the material. Writing them by hand (SrcAlpha, no _ALPHAPREMULTIPLY_ON, DepthOnly on)
+        // disagreed with URP's "preserve specular" alpha blend (One, _ALPHAPREMULTIPLY_ON, DepthOnly off), so every load
+        // re-derived them in memory and the next AssetDatabase.SaveAssets rewrote the .mat. Runs every build: a no-op on
+        // a material already in URP's canonical state, so the file is stable.
         private static void MakeTransparent(Material material)
         {
-            if (material.GetFloat("_Surface") == 1f)
-            {
-                return;
-            }
+            string before = EditorJsonUtility.ToJson(material);
             material.SetFloat("_Surface", 1f);
-            material.SetFloat("_Blend", 0f);
-            material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
-            material.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
-            material.SetFloat("_ZWrite", 0f);
-            material.SetOverrideTag("RenderType", "Transparent");
-            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.SetFloat("_Blend", 0f); // Alpha
+            BaseShaderGUI.SetupMaterialBlendMode(material);
             material.SetShaderPassEnabled("ShadowCaster", false);
-            material.renderQueue = (int)RenderQueue.Transparent;
-            EditorUtility.SetDirty(material);
+            if (EditorJsonUtility.ToJson(material) != before)
+            {
+                EditorUtility.SetDirty(material);
+            }
         }
 
         private static void CreateBox(string name, Vector3 position, Vector3 scale, Material material)

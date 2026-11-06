@@ -46,6 +46,8 @@ namespace MicroArena.Gameplay.Enemies
 
         /// <summary>Raised once when the enemy dies, just before its object is destroyed.</summary>
         public event Action<EnemyDied> OnDied;
+        /// <summary>Raised whenever a damage packet lands: (current HP, never below 0; max HP). Story 007 boss bar.</summary>
+        public event Action<float, float> OnHealthChanged;
 
         /// <inheritdoc />
         public Transform Transform => transform;
@@ -53,6 +55,8 @@ namespace MicroArena.Gameplay.Enemies
         public bool IsAlive { get; private set; }
         /// <summary>Current HP.</summary>
         public float CurrentHealth => _health;
+        /// <summary>Max HP (the starting HP).</summary>
+        public float MaxHealth => StartingHealth;
         /// <summary>Kind from the config.</summary>
         public virtual EnemyKind Kind => _config.Kind;
         /// <summary>True while stunned (no acting).</summary>
@@ -146,6 +150,7 @@ namespace MicroArena.Gameplay.Enemies
                 OnStunned();
             }
             _health -= info.Amount;
+            OnHealthChanged?.Invoke(Mathf.Max(0f, _health), StartingHealth);
             if (_health <= 0f)
             {
                 Die();

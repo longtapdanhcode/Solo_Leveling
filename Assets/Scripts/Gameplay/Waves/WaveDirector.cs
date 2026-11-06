@@ -7,6 +7,9 @@
 // Story 006 (2026-11-05): Wave 5/10 spawn the real bosses. A Boss wave ends when the boss is dead AND no other enemy is
 // alive (Wave 5: the 4 escorts; Wave 10 has none, so the Void Warden's death ends the run in Victory). Once the boss is
 // dead no more escorts spawn.
+// Story 007 (2026-11-05): the defeat no longer restarts by itself (the defeat screen offers replay and calls RestartRun);
+// a Boss wave's remaining count is the boss plus every escort still to kill; boss and husk-explosion events for the HUD
+// and the screen shake.
 
 using System;
 using System.Collections.Generic;
@@ -34,6 +37,11 @@ namespace MicroArena.Gameplay.Waves
         public const string InvulnerableArgument = "-arenaInvulnerable";
         /// <summary>Command-line option <c>-arenaStartWave &lt;n&gt;</c>: every run starts at wave n. Development builds only.</summary>
         public const string StartWaveArgument = "-arenaStartWave";
+        /// <summary>
+        /// Command-line option <c>-arenaForceEnd victory|defeat</c>: the first run ends at once in that phase (victory: Wave 10
+        /// is started and completed; defeat: the run fails), so the end screen can be captured. Development builds only.
+        /// </summary>
+        public const string ForceEndArgument = "-arenaForceEnd";
 
         // Debug only: window re-granted every frame while the debug invulnerability is on.
         private const float DebugInvulnerabilityWindow = 1f;
@@ -42,7 +50,6 @@ namespace MicroArena.Gameplay.Waves
         {
             None,
             ContinueFromCardPick,
-            RestartRun,
         }
 
         [SerializeField] private WaveConfig _config;
@@ -54,14 +61,12 @@ namespace MicroArena.Gameplay.Waves
         [Tooltip("Optional. Passed to spawned enemies; when empty they keep their prefab's value.")]
         [SerializeField] private CombatQueryConfig _queryConfig;
 
-        [Header("Hand-offs (until stories 004 and 007 hook in)")]
+        [Header("Hand-offs")]
         [Tooltip("Leave the card pick by itself after the delay. Turn off once story 004 calls ContinueFromCardPick.")]
         [SerializeField] private bool _autoContinueCardPick = true;
         // [PLACEHOLDER] Pause between waves while no card pick exists.
         [Tooltip("[PLACEHOLDER] Seconds before the automatic continue.")]
         [SerializeField, Min(0f)] private float _autoContinueDelay = 1.5f;
-        [Tooltip("Restart at Wave 1 by itself after WaveConfig.DefeatRestartDelay. Turn off when story 007 shows a defeat screen that calls RestartRun.")]
-        [SerializeField] private bool _autoRestartOnDefeat = true;
 
         [Header("Debug")]
         [Tooltip("Keeps Kaelen invulnerable (evidence capture). Also enabled by the -arenaInvulnerable launch argument. Editor and development builds only. Keep off.")]
@@ -73,6 +78,7 @@ namespace MicroArena.Gameplay.Waves
         private Vector3 _playerSpawn;
         private bool _invulnerable;
         private int _startWave = 1;
+        private RunPhase _forcedEnd = RunPhase.Playing; // Playing = none; debug only
 
         private WaveDefinition _wave;
         private bool _waveActive;
@@ -90,7 +96,7 @@ namespace MicroArena.Gameplay.Waves
         public event Action<int> OnWaveStarted;
         /// <summary>Raised when a wave's goal is met: (1-based wave number). Not raised on defeat.</summary>
         public event Action<int> OnWaveEnded;
-        /// <summary>Raised when the wave progress changes: (remaining, target). Boss waves report 1/1 until the boss dies (0/1 while escorts remain).</summary>
+        /// <summary>Raised when the wave progress changes: (remaining, target). See <see cref="Remaining"/>.</summary>
         public event Action<int, int> OnRemainingChanged;
         /// <summary>Raised after waves 1-9: (cleared wave). Story 004 shows the cards, then calls <see cref="ContinueFromCardPick"/>.</summary>
         public event Action<int> OnCardPickRequested;
@@ -98,6 +104,14 @@ namespace MicroArena.Gameplay.Waves
         public event Action<EnemyDied> OnEnemyKilled;
         /// <summary>Raised when a run restarts, after Kaelen's HP, revive, dash and combo are reset. Story 004 clears cards here.</summary>
         public event Action OnRunReset;
+        /// <summary>Raised when a wave's boss spawns: (display name, current HP, max HP). Story 007 shows the boss bar.</summary>
+        public event Action<string, float, float> OnBossSpawned;
+        /// <summary>Raised when the boss takes a hit: (current HP, max HP).</summary>
+        public event Action<float, float> OnBossHealthChanged;
+        /// <summary>Raised once when the boss leaves: killed, or removed by a run reset / wave end. Story 007 hides the boss bar.</summary>
+        public event Action OnBossCleared;
+        /// <summary>Raised when a Volatile Husk explodes (its fuse ended): (position). Story 007 screen shake.</summary>
+        public event Action<Vector3> OnEnemyExploded;
 
         /// <summary>Run state machine (phase and wave number).</summary>
         public RunState Run => _runState;
@@ -107,10 +121,14 @@ namespace MicroArena.Gameplay.Waves
         public int WaveCount => _config.WaveCount;
         /// <summary>Goal of the current wave.</summary>
         public WaveGoal CurrentGoal => _wave.Goal;
-        /// <summary>Kills (or boss) still needed in the current wave.</summary>
-        public int Remaining => _wave.Goal == WaveGoal.Boss ? (_bossDefeated ? 0 : 1) : Mathf.Max(0, _wave.KillTarget - _kills);
-        /// <summary>Total kills (or 1 boss) needed in the current wave.</summary>
-        public int RemainingTarget => _wave.Goal == WaveGoal.Boss ? 1 : _wave.KillTarget;
+        /// <summary>
+        /// Enemies still to kill in the current wave. Kill / SurviveOrKill: kills left. Boss: the boss while alive, plus every
+        /// escort alive, plus (while the boss lives) the escorts not spawned yet; once the boss is dead no more escorts spawn,
+        /// so only the living ones count. Reaches 0 exactly when a Boss wave ends.
+        /// </summary>
+        public int Remaining => _wave.Goal == WaveGoal.Boss ? BossWaveRemaining() : Mathf.Max(0, _wave.KillTarget - _kills);
+        /// <summary>Total of <see cref="Remaining"/> at wave start: the kill target, or the boss plus all its escorts.</summary>
+        public int RemainingTarget => _wave.Goal == WaveGoal.Boss ? 1 + EscortTotal : _wave.KillTarget;
         /// <summary>Seconds left to survive in a SurviveOrKill wave; -1 in other waves.</summary>
         public float SurviveTimeRemaining => _surviveRemaining;
         /// <summary>Enemies alive now.</summary>
@@ -188,6 +206,23 @@ namespace MicroArena.Gameplay.Waves
             StartWave();
         }
 
+        private int EscortTotal => _wave.SpawnPool.Length > 0 ? _wave.EscortCount : 0;
+
+        private int BossWaveRemaining()
+        {
+            bool bossAlive = _boss != null && !_bossDefeated;
+            int escortsAlive = 0;
+            foreach (EnemyBase enemy in _alive)
+            {
+                if (enemy != _boss)
+                {
+                    escortsAlive++;
+                }
+            }
+            int unspawned = bossAlive ? Mathf.Max(0, EscortTotal - _poolSpawned) : 0;
+            return (bossAlive ? 1 : 0) + escortsAlive + unspawned;
+        }
+
         private void Awake()
         {
             var staging = new GameObject("SpawnStaging");
@@ -205,6 +240,12 @@ namespace MicroArena.Gameplay.Waves
                 {
                     _startWave = Mathf.Clamp(wave, 1, _config.WaveCount);
                 }
+                index = Array.IndexOf(args, ForceEndArgument);
+                if (index >= 0 && index + 1 < args.Length)
+                {
+                    string end = args[index + 1].ToLowerInvariant();
+                    _forcedEnd = end == "victory" ? RunPhase.Victory : end == "defeat" ? RunPhase.Defeat : RunPhase.Playing;
+                }
             }
         }
 
@@ -221,6 +262,17 @@ namespace MicroArena.Gameplay.Waves
         private void Start()
         {
             RestartRun();
+            if (_forcedEnd == RunPhase.Victory)
+            {
+                _runState.StartRun(_config.WaveCount);
+                DespawnAllEnemies();
+                StartWave();
+                CompleteWave();
+            }
+            else if (_forcedEnd == RunPhase.Defeat)
+            {
+                HandlePlayerRunEnded();
+            }
         }
 
         private void Update()
@@ -241,10 +293,6 @@ namespace MicroArena.Gameplay.Waves
                     if (action == PendingAction.ContinueFromCardPick)
                     {
                         ContinueFromCardPick();
-                    }
-                    else
-                    {
-                        RestartRun();
                     }
                 }
             }
@@ -305,6 +353,8 @@ namespace MicroArena.Gameplay.Waves
             if (_wave.Goal == WaveGoal.Boss)
             {
                 _boss = Spawn(_wave.BossPrefab, null, _wave.BossConfig);
+                _boss.OnHealthChanged += RelayBossHealth;
+                OnBossSpawned?.Invoke(((BossBase)_boss).DisplayName, _boss.CurrentHealth, _boss.MaxHealth);
             }
             OnWaveStarted?.Invoke(waveNumber);
             OnRemainingChanged?.Invoke(Remaining, RemainingTarget);
@@ -337,26 +387,23 @@ namespace MicroArena.Gameplay.Waves
             {
                 return;
             }
-            _waveActive = false;
-            if (_autoRestartOnDefeat)
-            {
-                Schedule(PendingAction.RestartRun, _config.DefeatRestartDelay);
-            }
+            _waveActive = false; // the defeat screen (story 007) offers the replay, which calls RestartRun
         }
 
         private void HandleEnemyDied(EnemyBase enemy, EnemyDied died)
         {
             _alive.Remove(enemy);
             OnEnemyKilled?.Invoke(died);
+            if (enemy == _boss && !_bossDefeated)
+            {
+                _bossDefeated = true;
+                OnBossCleared?.Invoke();
+            }
             if (!_waveActive)
             {
                 return;
             }
             _kills++;
-            if (enemy == _boss)
-            {
-                _bossDefeated = true;
-            }
             OnRemainingChanged?.Invoke(Remaining, RemainingTarget);
             bool goalMet = _wave.Goal == WaveGoal.Boss ? _bossDefeated && _alive.Count == 0 : _kills >= _wave.KillTarget;
             if (goalMet)
@@ -383,6 +430,10 @@ namespace MicroArena.Gameplay.Waves
             if (enemy is VoidCaster caster)
             {
                 caster.OnFired += TrackProjectile;
+            }
+            else if (enemy is VolatileHusk husk)
+            {
+                husk.OnExploded += position => OnEnemyExploded?.Invoke(position);
             }
             _alive.Add(enemy);
             enemy.transform.SetParent(null, true); // leaves the inactive staging: Awake runs now, configured
@@ -435,8 +486,18 @@ namespace MicroArena.Gameplay.Waves
             _projectiles.Add(projectile);
         }
 
+        private void RelayBossHealth(float current, float max)
+        {
+            OnBossHealthChanged?.Invoke(current, max);
+        }
+
         private void DespawnAllEnemies()
         {
+            if (_boss != null && !_bossDefeated)
+            {
+                OnBossCleared?.Invoke();
+            }
+            _boss = null;
             foreach (EnemyBase enemy in _alive)
             {
                 enemy.DespawnSilently();

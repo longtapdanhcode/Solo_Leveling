@@ -1,5 +1,6 @@
 // Implements: design/narrative/kich_ban_chuan.md section 5.3, production/epics/micro-arena-survivor/story-002-enemies.md.
 
+using System;
 using System.Collections.Generic;
 using MicroArena.Gameplay.Combat;
 using UnityEngine;
@@ -21,6 +22,9 @@ namespace MicroArena.Gameplay.Enemies
         private DamageableQuery _query;
         private bool _fusing;
         private float _fuseElapsed;
+
+        /// <summary>Raised when the fuse ends and the husk explodes (not when it is killed): (position). Story 007 screen shake.</summary>
+        public event Action<Vector3> OnExploded;
 
         /// <inheritdoc />
         protected override void Awake()
@@ -66,6 +70,7 @@ namespace MicroArena.Gameplay.Enemies
                 }
                 target.TakeDamage(new DamageInfo { Amount = Config.Damage });
             }
+            OnExploded?.Invoke(transform.position);
             // Self-explosion is a death and raises EnemyDied like any other; it counts as a wave kill (decided 2026-11-02).
             Die();
         }

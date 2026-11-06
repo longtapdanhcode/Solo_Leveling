@@ -142,7 +142,6 @@ MonoBehaviour:
   _wallHeight: 2
   _wallThickness: 1
   _boundsPadding: 0.5
-  _defeatRestartDelay: 2
   _trapStartWave: 8
   _trapSecondsPerRevolution: 6
   _trapDamage: 15

@@ -1,0 +1,45 @@
+# SoulBurstCheck (regression after story 007) — Unity 6000.6.3f1 batchmode, 2026-11-05 18:07, exit 0
+PASS config: RagePerKill == 5 (got 5)
+PASS config: MaxRage == 100 (got 100)
+PASS config: Damage == 120 (got 120)
+PASS config: ShockwaveRadius == 6 (got 6)
+PASS config: KnockbackDistance == 4 (got 4)
+PASS model: rage 0 at start (got 0)
+PASS model: +5 per kill (got 5)
+PASS model: capped at 100 after 31 kills (got 100)
+PASS model: OnRageChanged raised 20 times (no event at the cap), last value 100
+PASS model: Reset -> 0 (got 0)
+PASS model: TryConsume below 100 -> false, rage kept
+PASS input: SoulBurst action exists in the Player map
+PASS input: SoulBurst is bound to <Keyboard>/q
+PASS burst: rage 0 at start (got 0)
+PASS wiring: WaveDirector.OnEnemyKilled (Husk) gives +5 (got 5)
+PASS wiring: WaveDirector.OnRunReset empties the bar (got 0)
+PASS burst: Q at 0 does nothing
+PASS burst: a Volatile Husk EnemyDied gives +5 (got 5)
+PASS burst: 19 kills -> 95 (got 95)
+PASS burst: Q at 95 does nothing and keeps the rage
+PASS burst: capped at 100 after 29 kills (got 100)
+PASS gate: blocked while GamePause paused (card pick / pause)
+PASS gate: blocked in CardPick phase
+PASS gate: blocked in Defeat phase
+PASS gate: blocked in Victory phase
+PASS gate: allowed during hit-stop alone (IsFrozen, not IsPaused)
+PASS burst: rage 0 after firing (got 0)
+PASS burst: OnBurst reported 4 hits, LastBurstHits == 4
+PASS burst: second Q right after does nothing
+PASS burst: enemy at 3 m took exactly 120 (got 120)
+PASS burst: enemy at 4.2 m (diagonal) took exactly 120 (got 120)
+PASS burst: enemy at 5 m took exactly 120 (got 120)
+PASS burst: boss took exactly 120 (got 120)
+PASS burst: enemy at 7 m untouched (HP == max)
+PASS burst: Kaelen's HP unchanged (got 100)
+PASS knockback: near enemy pushed 4 m (got 4)
+PASS knockback: diagonal enemy pushed 4 m (got 4)
+PASS knockback: near enemy pushed outward (+X)
+PASS knockback: diagonal enemy pushed outward (-X,-Z)
+PASS knockback: boss pushed 0 m (got 0)
+PASS knockback: unreached enemy pushed 0 m (got 0)
+PASS reset: run reset empties the bar (got 0)
+PASS gate: blocked while Kaelen is dead
+SoulBurstCheck: ALL PASS

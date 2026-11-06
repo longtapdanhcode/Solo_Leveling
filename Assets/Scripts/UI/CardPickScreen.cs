@@ -1,15 +1,15 @@
 // Implements: production/epics/micro-arena-survivor/story-004-upgrade-cards.md (card pick screen: name, description,
-// rarity; pick with 1/2/3 or a click). Visual polish is story 007.
+// rarity; pick with 1/2/3 or a click). Story 007: TextMeshPro with Be Vietnam Pro (Vietnamese diacritics), no legacy Text.
 
 using System;
 using System.Collections.Generic;
 using MicroArena.Gameplay.Cards;
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Config;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace MicroArena.UI
@@ -17,14 +17,15 @@ namespace MicroArena.UI
     /// <summary>
     /// Runtime-built UGUI card pick screen. Pauses the game through <see cref="GamePause"/> while shown and works at
     /// time scale 0 (no scaled-time animation). Keys 1/2/3 or a click pick a card; keys pressed on the frame the screen
-    /// opens are ignored. Creates an EventSystem with <see cref="InputSystemUIInputModule"/> when
-    /// <see cref="EventSystem.current"/> is null (no scene search).
+    /// opens are ignored. Creates an EventSystem through <see cref="UiKit.EnsureEventSystem"/> when none is current.
     /// </summary>
     public sealed class CardPickScreen : MonoBehaviour, ICardPickView
     {
-        private const string BuiltinFontName = "LegacyRuntime.ttf";
+        [Header("Fonts (Be Vietnam Pro TMP font assets)")]
+        [SerializeField] private TMP_FontAsset _font;
+        [SerializeField] private TMP_FontAsset _boldFont;
 
-        [Header("Layout (presentation only; polish in story 007)")]
+        [Header("Layout (presentation only)")]
         [SerializeField] private Vector2 _referenceResolution = new Vector2(1920f, 1080f);
         [SerializeField] private Vector2 _cardSize = new Vector2(440f, 560f);
         [SerializeField, Min(0f)] private float _cardSpacing = 60f;
@@ -47,7 +48,6 @@ namespace MicroArena.UI
 
         private GameObject _root;
         private RectTransform _row;
-        private Font _font;
         private readonly List<GameObject> _cards = new List<GameObject>();
         private Action<int> _onPicked;
         private int _shownFrame = -1;
@@ -56,11 +56,18 @@ namespace MicroArena.UI
         /// <inheritdoc />
         public bool IsShown { get; private set; }
 
+        /// <summary>Sets the TextMeshPro font assets when building the scene. Call before the screen is first shown.</summary>
+        public void Configure(TMP_FontAsset font, TMP_FontAsset boldFont)
+        {
+            _font = font;
+            _boldFont = boldFont;
+        }
+
         /// <inheritdoc />
         public void Show(IReadOnlyList<CardConfig> cards, Action<int> onPicked)
         {
             EnsureBuilt();
-            EnsureEventSystem();
+            UiKit.EnsureEventSystem();
             ClearCards();
             _count = cards.Count;
             for (int i = 0; i < cards.Count; i++)
@@ -134,24 +141,13 @@ namespace MicroArena.UI
             {
                 return;
             }
-            _font = Resources.GetBuiltinResource<Font>(BuiltinFontName);
+            _root = UiKit.CreateCanvas("CardPickCanvas", transform, _sortingOrder, _referenceResolution, true);
 
-            _root = new GameObject("CardPickCanvas", typeof(RectTransform));
-            _root.transform.SetParent(transform, false);
-            var canvas = _root.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = _sortingOrder;
-            var scaler = _root.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = _referenceResolution;
-            scaler.matchWidthOrHeight = 0.5f;
-            _root.AddComponent<GraphicRaycaster>();
-
-            RectTransform dim = CreateRect("Dim", _root.transform);
-            Stretch(dim);
+            RectTransform dim = UiKit.CreateRect("Dim", _root.transform);
+            UiKit.Stretch(dim);
             dim.gameObject.AddComponent<Image>().color = _dimColor;
 
-            Text title = CreateText("Title", _root.transform, _title, 56, FontStyle.Bold, _textColor, TextAnchor.MiddleCenter);
+            TextMeshProUGUI title = UiKit.CreateText("Title", _root.transform, _title, _boldFont, 56f, _textColor, TextAlignmentOptions.Center);
             RectTransform titleRect = title.rectTransform;
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
@@ -159,7 +155,7 @@ namespace MicroArena.UI
             titleRect.anchoredPosition = new Vector2(0f, -110f);
             titleRect.sizeDelta = new Vector2(0f, 90f);
 
-            _row = CreateRect("Cards", _root.transform);
+            _row = UiKit.CreateRect("Cards", _root.transform);
             // Full-width row: with zero width the layout group would start at the centre and overflow to the right.
             _row.anchorMin = new Vector2(0f, 0.5f);
             _row.anchorMax = new Vector2(1f, 0.5f);
@@ -178,7 +174,7 @@ namespace MicroArena.UI
 
         private GameObject BuildCard(CardConfig card, int index)
         {
-            RectTransform rect = CreateRect($"Card{index + 1}", _row);
+            RectTransform rect = UiKit.CreateRect($"Card{index + 1}", _row);
             rect.sizeDelta = _cardSize;
             var image = rect.gameObject.AddComponent<Image>();
             image.color = _cardColor;
@@ -192,15 +188,15 @@ namespace MicroArena.UI
             outline.effectColor = rarityColor;
             outline.effectDistance = new Vector2(4f, -4f);
 
-            Place(CreateText("Rarity", rect, RarityLabel(card.Rarity), 30, FontStyle.Bold, rarityColor, TextAnchor.MiddleCenter), 30f, 50f);
-            Place(CreateText("Name", rect, card.DisplayName, 42, FontStyle.Bold, _textColor, TextAnchor.MiddleCenter), 100f, 110f);
-            Place(CreateText("Description", rect, card.Description, 30, FontStyle.Normal, _textColor, TextAnchor.UpperCenter), 240f, 220f);
-            Place(CreateText("Key", rect, $"[{index + 1}]", 36, FontStyle.Bold, rarityColor, TextAnchor.MiddleCenter), _cardSize.y - 80f, 50f);
+            Place(UiKit.CreateText("Rarity", rect, RarityLabel(card.Rarity), _boldFont, 30f, rarityColor, TextAlignmentOptions.Center), 30f, 50f);
+            Place(UiKit.CreateText("Name", rect, card.DisplayName, _boldFont, 42f, _textColor, TextAlignmentOptions.Center), 100f, 110f);
+            Place(UiKit.CreateText("Description", rect, card.Description, _font, 30f, _textColor, TextAlignmentOptions.Top), 240f, 220f);
+            Place(UiKit.CreateText("Key", rect, $"[{index + 1}]", _boldFont, 36f, rarityColor, TextAlignmentOptions.Center), _cardSize.y - 80f, 50f);
             return rect.gameObject;
         }
 
         // Top-anchored block inside a card, with side padding.
-        private static void Place(Text text, float top, float height)
+        private static void Place(TMP_Text text, float top, float height)
         {
             RectTransform r = text.rectTransform;
             r.anchorMin = new Vector2(0f, 1f);
@@ -208,37 +204,6 @@ namespace MicroArena.UI
             r.pivot = new Vector2(0.5f, 1f);
             r.anchoredPosition = new Vector2(0f, -top);
             r.sizeDelta = new Vector2(-48f, height);
-        }
-
-        private Text CreateText(string name, Transform parent, string content, int size, FontStyle style, Color color, TextAnchor anchor)
-        {
-            RectTransform rect = CreateRect(name, parent);
-            var text = rect.gameObject.AddComponent<Text>();
-            text.font = _font;
-            text.text = content;
-            text.fontSize = size;
-            text.fontStyle = style;
-            text.color = color;
-            text.alignment = anchor;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.raycastTarget = false;
-            return text;
-        }
-
-        private static RectTransform CreateRect(string name, Transform parent)
-        {
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            return (RectTransform)go.transform;
-        }
-
-        private static void Stretch(RectTransform rect)
-        {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
         }
 
         private void ClearCards()
@@ -268,18 +233,6 @@ namespace MicroArena.UI
                 case CardRarity.Rare: return _rareColor;
                 default: return _legendaryColor;
             }
-        }
-
-        private static void EnsureEventSystem()
-        {
-            if (EventSystem.current != null) // set by any enabled EventSystem; no scene search
-            {
-                return;
-            }
-            var go = new GameObject("EventSystem");
-            go.AddComponent<EventSystem>();
-            var module = go.AddComponent<InputSystemUIInputModule>();
-            module.AssignDefaultActions();
         }
     }
 }

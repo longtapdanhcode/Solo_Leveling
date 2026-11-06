@@ -1,4 +1,5 @@
-// Implements: production/epics/micro-arena-survivor/story-006-bosses.md (minimal red telegraph; story 007 refines the look).
+// Implements: production/epics/micro-arena-survivor/story-006-bosses.md (floor telegraph), story-007 (red = damage,
+// purple = warning only; colours from BossConfig).
 
 using MicroArena.Gameplay.Config;
 using UnityEngine;
@@ -6,8 +7,9 @@ using UnityEngine;
 namespace MicroArena.Gameplay.Bosses
 {
     /// <summary>
-    /// Draws one <see cref="Telegraph"/> as a flat red sector (a circle is a 360 degree sector) on the floor, using the
-    /// telegraph's own <see cref="TelegraphShape"/> numbers. Alpha rises with the telegraph's progress.
+    /// Draws one <see cref="Telegraph"/> as a flat sector (a circle is a 360 degree sector) on the floor, using the
+    /// telegraph's own <see cref="TelegraphShape"/> numbers. Colour from <see cref="BossConfig.TelegraphColor"/>: red when it
+    /// deals damage, purple when it is a warning only. Alpha rises with the telegraph's progress.
     /// Owns its GameObject and mesh; call <see cref="Dispose"/> to remove both.
     /// </summary>
     public sealed class TelegraphView
@@ -24,13 +26,15 @@ namespace MicroArena.Gameplay.Bosses
 
         /// <summary>The telegraph this view draws.</summary>
         public Telegraph Telegraph => _telegraph;
+        /// <summary>Colour drawn (alpha excluded): red for damage, purple for a warning only.</summary>
+        public Color Color => _color;
 
         /// <summary>Builds the view and places it on the floor.</summary>
         public TelegraphView(Telegraph telegraph, BossConfig config, Material material)
         {
             _telegraph = telegraph;
             _config = config;
-            _color = material.color;
+            _color = config.TelegraphColor(telegraph.Damage);
             TelegraphShape shape = telegraph.Shape;
 
             _mesh = BuildSectorMesh(shape.HalfAngleDegrees, config.TelegraphSegments);

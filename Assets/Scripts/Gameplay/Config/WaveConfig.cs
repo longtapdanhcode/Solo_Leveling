@@ -118,10 +118,6 @@ namespace MicroArena.Gameplay.Config
         [Tooltip("[PLACEHOLDER] Kaelen and enemies are kept this many metres off the wall faces.")]
         [SerializeField, Min(0f)] private float _boundsPadding = 0.5f;
 
-        [Header("Run flow")]
-        [Tooltip("Seconds between the final death and the restart at Wave 1 (when auto-restart is on).")]
-        [SerializeField, Min(0f)] private float _defeatRestartDelay = 2f;
-
         [Header("Rotating trap")]
         [Tooltip("First wave (1-based) in which the trap is active.")]
         [SerializeField, Min(1)] private int _trapStartWave = 8;
@@ -164,9 +160,6 @@ namespace MicroArena.Gameplay.Config
         public float WallThickness => _wallThickness;
         /// <summary>Largest |x| or |z| a body may reach (half the arena minus half a wall minus padding).</summary>
         public float PlayableHalfExtent => _arenaSize * 0.5f - _wallThickness * 0.5f - _boundsPadding;
-
-        /// <summary>Seconds from the final death to the restart.</summary>
-        public float DefeatRestartDelay => _defeatRestartDelay;
 
         /// <summary>First wave with the trap active (1-based).</summary>
         public int TrapStartWave => _trapStartWave;

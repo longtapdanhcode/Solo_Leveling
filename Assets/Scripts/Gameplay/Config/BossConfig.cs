@@ -30,6 +30,16 @@ namespace MicroArena.Gameplay.Config
         [SerializeField, Range(0f, 1f)] private float _telegraphEndAlpha = 0.7f;
         [Tooltip("Visual only. Edge segments of the fan / circle mesh.")]
         [SerializeField, Min(3)] private int _telegraphSegments = 48;
+        // Story 007 (owner decision 2026-11-05): red always means "you lose HP"; a 0-damage warning (the Void Warden pull
+        // wind-up) is purple. Alpha is ignored: it comes from the start / end alpha above.
+        [Tooltip("Visual only. Colour of every telegraph that deals damage (alpha ignored).")]
+        [SerializeField] private Color _damageTelegraphColor = new Color(1f, 0.1f, 0.1f);
+        [Tooltip("Visual only. Colour of a warning-only telegraph that deals no damage, e.g. the pull wind-up (alpha ignored).")]
+        [SerializeField] private Color _warningTelegraphColor = new Color(0.62f, 0.25f, 1f);
+        [Tooltip("HUD boss bar name of the Wave 5 boss.")]
+        [SerializeField] private string _gargoyleDisplayName = "GARGOYLE BẠO QUÂN";
+        [Tooltip("HUD boss bar name of the Wave 10 boss.")]
+        [SerializeField] private string _wardenDisplayName = "CHÚA TỂ HƯ VÔ";
 
         [Header("Gargoyle Tyrant (Wave 5)")]
         [SerializeField, Min(1f)] private float _gargoyleMaxHealth = 600f;
@@ -115,6 +125,20 @@ namespace MicroArena.Gameplay.Config
         public float TelegraphEndAlpha => _telegraphEndAlpha;
         /// <summary>Visual: edge segments of the telegraph mesh.</summary>
         public int TelegraphSegments => _telegraphSegments;
+        /// <summary>Visual: colour of a telegraph that deals damage (red).</summary>
+        public Color DamageTelegraphColor => _damageTelegraphColor;
+        /// <summary>Visual: colour of a warning-only telegraph (0 damage, purple).</summary>
+        public Color WarningTelegraphColor => _warningTelegraphColor;
+        /// <summary>HUD name of the Gargoyle Tyrant.</summary>
+        public string GargoyleDisplayName => _gargoyleDisplayName;
+        /// <summary>HUD name of the Void Warden.</summary>
+        public string WardenDisplayName => _wardenDisplayName;
+
+        /// <summary>Colour of a telegraph dealing <paramref name="damage"/>: red when it hurts, purple when it is a warning only (0).</summary>
+        public Color TelegraphColor(float damage)
+        {
+            return damage > 0f ? _damageTelegraphColor : _warningTelegraphColor;
+        }
 
         /// <summary>Gargoyle HP.</summary>
         public float GargoyleMaxHealth => _gargoyleMaxHealth;

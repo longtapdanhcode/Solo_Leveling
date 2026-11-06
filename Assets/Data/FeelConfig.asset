@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cef155ca6afd249b68cd32ebc49d1fb7, type: 3}
+  m_Name: FeelConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MicroArena.Gameplay.Config.FeelConfig
+  _comboShakeStep: 3
+  _comboShakeAmplitude: 0.12
+  _comboShakeDuration: 0.15
+  _explosionShakeAmplitude: 0.25
+  _explosionShakeDuration: 0.25
+  _shakeFrequency: 30
+  _reviveFlashColor: {r: 1, g: 0.85, b: 0.4, a: 0.55}
+  _reviveFlashDuration: 0.6
+  _reviveMessageDuration: 1.6
+  _lowHealthFraction: 0.3
+  _rageReadyPulseSpeed: 3
+  _endScreenDelay: 1
+  _replayInputDelay: 0.4

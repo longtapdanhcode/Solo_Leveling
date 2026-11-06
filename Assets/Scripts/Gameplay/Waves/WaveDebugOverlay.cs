@@ -1,5 +1,7 @@
 // VERIFICATION SCAFFOLDING for story 003 (production/epics/micro-arena-survivor/story-003-arena-waves.md): shows the
-// wave flow on screen for the evidence screenshot. Not the HUD; replace or delete when story 007 adds the real HUD.
+// wave flow on screen for the evidence screenshot. Not the HUD. Story 007 (owner decision 2026-11-05): kept as a debug
+// readout, shown only when Debug.isDebugBuild (Editor and development builds), in the bottom-left corner so it never
+// covers the HUD; a release build shows only the real HUD.
 
 using MicroArena.Gameplay.Combat;
 using MicroArena.Gameplay.Player;
@@ -10,6 +12,13 @@ namespace MicroArena.Gameplay.Waves
     /// <summary>Plain IMGUI readout of the run: phase, wave, remaining kills or timer, enemies alive, Kaelen's HP.</summary>
     public sealed class WaveDebugOverlay : MonoBehaviour
     {
+        private const float Width = 520f;
+        private const float Height = 140f;
+        private const float Margin = 10f;
+
+        /// <summary>True when the overlay may appear: Editor and development builds only, never a release build.</summary>
+        public static bool IsAllowed => Debug.isDebugBuild;
+
         [SerializeField] private WaveDirector _director;
         [Tooltip("Kaelen.")]
         [SerializeField] private Health _player;
@@ -25,6 +34,11 @@ namespace MicroArena.Gameplay.Waves
             _director = director;
             _player = player;
             _soulBurst = soulBurst;
+        }
+
+        private void Awake()
+        {
+            enabled = IsAllowed; // disabled here, OnEnable never subscribes and OnGUI never draws in a release build
         }
 
         private void OnEnable()
@@ -50,7 +64,11 @@ namespace MicroArena.Gameplay.Waves
 
         private void OnGUI()
         {
-            GUILayout.BeginArea(new Rect(10f, 10f, 520f, 224f));
+            if (!IsAllowed)
+            {
+                return;
+            }
+            GUILayout.BeginArea(new Rect(Margin, Screen.height - Height - Margin, Width, Height));
             GUILayout.Label($"Wave {_director.CurrentWave}/{_director.WaveCount}   phase: {_director.Run.Phase}   goal: {_director.CurrentGoal}");
             string timer = _director.SurviveTimeRemaining >= 0f ? $"   survive: {_director.SurviveTimeRemaining:0.0}s" : string.Empty;
             GUILayout.Label($"Remaining {_director.Remaining}/{_director.RemainingTarget}{timer}   enemies alive: {_director.AliveEnemyCount}");

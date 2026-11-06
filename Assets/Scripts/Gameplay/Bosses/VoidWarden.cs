@@ -20,6 +20,9 @@ namespace MicroArena.Gameplay.Bosses
         public bool IsPhaseTwo => _wardenBrain.IsPhaseTwo;
 
         /// <inheritdoc />
+        public override string DisplayName => Settings.WardenDisplayName;
+
+        /// <inheritdoc />
         protected override float StartingHealth => Settings.WardenMaxHealth;
 
         /// <inheritdoc />

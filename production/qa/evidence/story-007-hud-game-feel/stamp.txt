@@ -1,0 +1,26 @@
+Reviewed-Content-Hash: Assets/Data/FeelConfig.asset 4a67770086c988ba3b77b7ecdff72f2e9503f372
+Reviewed-Content-Hash: Assets/Data/WaveConfig.asset ad88d444770333efe8399f5e3a47b7ea9af33560
+Reviewed-Content-Hash: Assets/Fonts/BeVietnamPro/BeVietnamPro-Bold SDF.asset d1a3b447414f39ef20cc8a77c3eb8cef6c484bb6
+Reviewed-Content-Hash: Assets/Fonts/BeVietnamPro/BeVietnamPro-Regular SDF.asset 649843eda8760f9898c758f66eaea547a2ae5285
+Reviewed-Content-Hash: Assets/Materials/SoulBurstRing.mat a07aafc315b1d63d82e6eb89567b452bf3b03690
+Reviewed-Content-Hash: Assets/Scenes/Arena.unity d13bf54c5886ecf65fc1b4a80d6687da2ea57c5e
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Arena/FollowCamera.cs b15de177a4e3a13c9d8d715d679727f367c22018
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Bosses/BossBase.cs 162265c8e014e1de137d84fac99d355aa6e49731
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Bosses/GargoyleTyrant.cs b4ff0cdc793c95275a118c376883b162d310f05b
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Bosses/TelegraphView.cs 3f41807f648b55c7e43b4b6244c3fbc384580519
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Bosses/VoidWarden.cs 5ff135b816b78208321d3198591b56ecff2ac840
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Config/BossConfig.cs 873992f260305887a893478048b4fc553143dbbe
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Config/FeelConfig.cs 2224cf0a51246e0291d5aaaeacc258bc6c5e35b2
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Config/WaveConfig.cs d5332c3db8a8787b95153404dcedd1db838fd91f
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Editor/ArenaSceneBuilder.cs 6e37526f85d74bc75983b580415ca8cf38de82bd
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/EnemyBase.cs 79a663842aebfbce149d71166f455970859fc342
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Enemies/VolatileHusk.cs 1d50a4e7373eeab8db095ddbdd2d3f1f7f05252e
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Feel/ScreenShake.cs e52207c5b561e0475eeaf856360697fc5216d39a
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Feel/ShakeModel.cs 34b3d277e12405d4f7475bdb4d962d6779c91f78
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Waves/WaveDebugOverlay.cs 3ac9a2d24d6eb2867686e123b5e852dadb873b73
+Reviewed-Content-Hash: Assets/Scripts/Gameplay/Waves/WaveDirector.cs 28fdc7d0eebf03f55dd8b8d863e5b46337df5702
+Reviewed-Content-Hash: Assets/Scripts/UI/CardPickScreen.cs 98fe1ec957a466600f4b2752071d3750d08a7349
+Reviewed-Content-Hash: Assets/Scripts/UI/EndScreens.cs 6061294cac6509cf674cbd5c4bdbae55e7cdfd4a
+Reviewed-Content-Hash: Assets/Scripts/UI/HudController.cs 23f798508c55f9a370bf21eb5aa6e3334324cdfb
+Reviewed-Content-Hash: Assets/Scripts/UI/UiKit.cs 1c34d3a1de86213642208ad68e1d3bc6795e22a5
+Reviewed-Content-Hash: tools/hud-feel-check/HudFeelCheck.cs 58e914310af8247e964788eeafd77fc0a3a96564

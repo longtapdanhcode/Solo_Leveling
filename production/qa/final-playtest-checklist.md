@@ -61,3 +61,30 @@ Thêm `-arenaInvulnerable` để không chết (telegraph vẫn hiện, nhưng d
 
 Ghi chú khi máy chạy: boss đi xuyên vào thân Kaelen (không có va chạm thân, giống quái thường); vòng báo trước lực hút
 cùng màu đỏ dù không gây sát thương. Thanh máu boss và screen shake là story 007.
+
+---
+
+## Story 007 — HUD + game feel (`production/epics/micro-arena-survivor/story-007-hud-game-feel.md`)
+
+Đã kiểm tự động: `tools/hud-feel-check/` 89/89 PASS; hồi quy boss 89/89, soul burst 43/43, thẻ 64/64
+(`production/qa/evidence/story-007-hud-game-feel/`). Ảnh chụp từ bản build (chỉ cửa sổ game): HUD Wave 5 và 10 có thanh
+máu boss, màn Chiến Thắng, màn Thất Bại, HUD bản release không có overlay debug.
+
+Lệnh mở thêm (development build): `-arenaForceEnd victory` hoặc `-arenaForceEnd defeat` mở thẳng màn thắng/thua sau 1 s.
+
+| # | Kiểm tra khi chơi | Trạng thái |
+|---|---|---|
+| 7.1 | Mất máu: thanh HP giảm đúng số; dưới ngưỡng máu thấp thanh chuyển đỏ. | NOT VERIFIED |
+| 7.2 | Dash 2 lần: hai chấm Dash tối lần lượt, sáng lại từng chấm khi hồi. | NOT VERIFIED |
+| 7.3 | Diệt quái: "CÒN LẠI x/y" và thanh tiến trình giảm theo từng con; sang wave mới thì đặt lại. | NOT VERIFIED |
+| 7.4 | Wave 5: hạ Gargoyle khi còn quái phụ → thanh máu boss ẩn, "CÒN LẠI" hiện số quái phụ còn lại (không phải 0/1); diệt con cuối thì hiện màn chọn thẻ. | NOT VERIFIED |
+| 7.5 | Thanh máu boss giảm khi chém boss (Wave 5 và 10), ẩn khi boss chết. | NOT VERIFIED |
+| 7.6 | Thanh Nộ đầy 100 → dòng "[Q] SOUL BURST — SẴN SÀNG" nhấp nháy; tung Q thì thanh về 0. | NOT VERIFIED |
+| 7.7 | Screen shake nhẹ khi nhát chém thứ 3 trúng và khi Volatile Husk nổ; Kaelen và quái không bị lệch vị trí. | NOT VERIFIED |
+| 7.8 | Rung đang chạy rồi mở màn chọn thẻ (pause): camera đứng yên ngay; chơi lại sau Defeat: camera không còn lệch. | NOT VERIFIED |
+| 7.9 | Void Warden: vòng báo lực hút màu **tím**; các vòng/vệt gây sát thương màu đỏ. | NOT VERIFIED |
+| 7.10 | Hồi sinh lần đầu: chớp màn hình và chữ "HỒI SINH!" hiện rõ. | NOT VERIFIED |
+| 7.11 | Màn Thất Bại sau khi hết hồi sinh (chơi thật, không dùng cờ): bấm **Enter**, **R** hoặc click nút "CHƠI LẠI" đều chơi lại từ Wave 1. | NOT VERIFIED |
+| 7.12 | Màn Chiến Thắng sau khi hạ Void Warden thật: Enter / R / click đều chơi lại. Phím Space **không** chơi lại (Space là Dash). | NOT VERIFIED |
+| 7.13 | Bản release (`Builds/macOS/`): không có dòng debug góc dưới trái, chữ tiếng Việt hiển thị đủ dấu ở HUD, chọn thẻ, thắng, thua. | NOT VERIFIED |
+| 7.14 | Cảm giác: độ mạnh/độ dài rung, độ trễ 1 s trước màn thắng/thua hợp lý (giá trị trong `Assets/Data/FeelConfig.asset`). | NOT VERIFIED |

@@ -1,0 +1,91 @@
+# HudFeelCheck (story 007) — Unity 6000.6.3f1 batchmode, 2026-11-05 18:07, exit 0
+PASS fonts: Be Vietnam Pro Regular and Bold TMP font assets exist
+PASS fonts: BeVietnamPro-Regular SDF already holds every glyph of "ẮẰẲẴẶắằẳẵặĐđƠơƯưỆệ" (HasCharacters, no add)
+PASS fonts: BeVietnamPro-Regular SDF holds the whole builder set (ASCII + all Vietnamese letters)
+PASS fonts: BeVietnamPro-Regular SDF is Dynamic, keeps its source .ttf for player builds, ClearDynamicDataOnBuild off
+PASS fonts: BeVietnamPro-Regular SDF atlas texture and material are sub-assets, material uses a TextMeshPro shader
+PASS fonts: BeVietnamPro-Bold SDF already holds every glyph of "ẮẰẲẴẶắằẳẵặĐđƠơƯưỆệ" (HasCharacters, no add)
+PASS fonts: BeVietnamPro-Bold SDF holds the whole builder set (ASCII + all Vietnamese letters)
+PASS fonts: BeVietnamPro-Bold SDF is Dynamic, keeps its source .ttf for player builds, ClearDynamicDataOnBuild off
+PASS fonts: BeVietnamPro-Bold SDF atlas texture and material are sub-assets, material uses a TextMeshPro shader
+PASS tmp: TMP Essential Resources imported (TMP Settings in a Resources folder)
+PASS feel: Assets/Data/FeelConfig.asset exists (shake on combo step 3)
+PASS scene: Arena has HudController, EndScreens, ScreenShake (on the camera), CardPickScreen
+PASS scene: HUD, end screens and card pick are wired to the Be Vietnam Pro font assets
+PASS scene: HUD, end screens, shake are wired to FeelConfig.asset
+PASS scene: no legacy UnityEngine.UI.Text in Arena.unity
+PASS source: UI scripts never create legacy Text or load LegacyRuntime.ttf
+PASS scene: the defeat no longer auto-restarts (no _autoRestartOnDefeat on WaveDirector)
+PASS shake model: idle offset is zero
+PASS shake model: strength fades linearly (1 -> 0.5 after half the duration) (got 0.5)
+PASS shake model: each axis bounded by the remaining strength
+PASS shake model: a weaker shake does not cut a stronger one short (got 0.5)
+PASS shake model: a stronger shake restarts it (got 0.8)
+PASS shake model: after its duration the offset is zero
+PASS shake model: Reset zeroes the offset at once
+PASS shake model: non-positive amplitude or duration is ignored
+PASS overlay: WaveDebugOverlay.IsAllowed == Debug.isDebugBuild
+PASS overlay: Awake leaves it enabled exactly when Debug.isDebugBuild (editor: true)
+PASS overlay: source gates Awake and OnGUI on IsAllowed (=> Debug.isDebugBuild), drawn at the bottom-left
+PASS telegraph: damage colour is red (RGBA(1.000, 0.100, 0.100, 1.000))
+PASS telegraph: warning-only colour is purple (RGBA(0.620, 0.250, 1.000, 1.000))
+PASS telegraph: Void Warden slash fans are drawn red
+PASS telegraph: Void Warden pull wind-up circle (0 damage) is drawn purple
+PASS telegraph: every drawn telegraph uses red when it deals damage, purple when it does not
+PASS hud hp: full at run start (100 / 100)
+PASS hud hp: after 30 damage the bar and label follow OnHealthChanged (70 / 100)
+PASS hud hp: at or below FeelConfig.LowHealthFraction (0.45 here) the bar turns to the low colour
+PASS hud dash: 2 pips, both bright at run start
+PASS hud dash: after a dash one pip bright, one dim
+PASS hud dash: after the second dash both dim
+PASS hud dash: a recharge brightens a pip (OnChargesChanged)
+PASS hud rage: bar and label follow OnRageChanged (NỘ 25/100)
+PASS hud rage: full bar shows the Q-ready text ([Q] SOUL BURST — SẴN SÀNG)
+PASS hud revive: the revive shows the flash and the message
+PASS hud wave: run start shows WAVE 01/10 and 15/15 remaining
+PASS hud boss: no boss bar on a normal wave
+PASS hud wave 5: WAVE 05/10, boss bar shown with GARGOYLE BẠO QUÂN
+PASS hud wave 5: target = boss + 4 escorts (CÒN LẠI 5/5)
+PASS hud boss: a hit on the Gargoyle moves the boss bar (600 -> 540)
+PASS wave 5: Remaining counts boss + 2 alive escorts + 2 unspawned = 5/5
+PASS hud wave 5: an escort kill -> CÒN LẠI 4/5
+PASS hud boss: the Gargoyle's death hides the boss bar (OnBossCleared)
+PASS hud wave 5: Gargoyle dead, 1 escort alive, no more spawns -> CÒN LẠI 1/5 (not 0)
+PASS hud wave 5: last escort dies -> CÒN LẠI 0/5 and the wave ends
+PASS hud wave 5: Gargoyle dead with 4 escorts alive -> CÒN LẠI 4/5 (was 0/1 before story 007)
+PASS hud wave 5: the 4 escorts dead -> 0/5, wave over
+PASS hud boss: bar shown again on a new Wave 5
+PASS hud boss: a despawned boss (reset / wave end) hides the bar
+PASS hud wave 10: WAVE 10/10, boss bar with CHÚA TỂ HƯ VÔ, target 1
+PASS hud wave 10: Void Warden death hides the bar and gives Victory
+PASS hud stateless: shows the values of the event, not of Health (37 / 140 while Health is 50/100)
+PASS hud stateless: remaining label comes from OnRemainingChanged
+PASS hud stateless: runtime fields are only UI objects (no numbers, flags or strings) []
+PASS shake: idle camera sits exactly at Kaelen + offset
+PASS shake: combo step 1 does not shake
+PASS shake: a 3rd slash that hits nothing does not shake
+PASS shake: the 3rd slash that hits shakes with FeelConfig.ComboShakeAmplitude (0.37 here) (got 0.37)
+PASS shake: the camera moves by the shake offset ((0.00, 0.00, 0.33)), bounded by the amplitude
+PASS shake: Kaelen (gameplay) is not moved by the shake
+PASS shake: the view translates without tilting (looks at Kaelen + shake)
+PASS shake: a pause (GamePause) resets the shake and the camera offset to zero
+PASS shake: no shake starts while paused
+PASS shake: a Volatile Husk explosion shakes with FeelConfig.ExplosionShakeAmplitude (0.61 here) (got 0.61)
+PASS shake: a run reset stops the shake (offset zero)
+PASS shake: the run reset put Kaelen back at the spawn (gameplay untouched by the camera)
+PASS end: hidden during play
+PASS end: Void Warden death -> Victory phase, the screen is scheduled (real-time delay)
+PASS end victory: shown with CHIẾN THẮNG, game paused (timeScale 0)
+PASS end victory: clicking CHƠI LẠI at timeScale 0 restarts the run (Wave 1, Playing, pause released)
+PASS end defeat: out of revives -> Defeat phase
+PASS end defeat: no automatic restart is scheduled
+PASS end defeat: shown with THẤT BẠI, game paused
+PASS end: Update calls Replay() when a replay key wasPressedThisFrame, at any time scale (no scaled time used)
+PASS end defeat: the replay (Enter / R) at timeScale 0 restarts the run (Kaelen alive, full HP, pause released)
+PASS end: a run reset from elsewhere also hides the screen and releases the pause
+PASS end: replay keys are Enter / keypad Enter / R; Space (Dash) excluded
+PASS cards: the card pick screen shows every pool card
+PASS fonts: all 48 TMP texts (HUD, end screens, card pick) use Be Vietnam Pro Regular/Bold
+PASS fonts: every shown string (card names like "Vết Chém Hỏa Ngục", "Cuồng Nộ Hư Vô") has all its glyphs []
+PASS fonts: no legacy UnityEngine.UI.Text was built at runtime
+HudFeelCheck: ALL PASS
